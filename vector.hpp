@@ -1,6 +1,9 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
+#include "reverse_iterator.hpp"
+#include "random_access_iterator.hpp"
+
 namespace ft {
 	template <class Type, class Allocator = std::allocator<Type> >
 	class vector {
@@ -12,22 +15,11 @@ namespace ft {
 			typedef typename allocator_type::pointer pointer;
 			typedef typename allocator_type::const_pointer const_pointer;
 
-			class iterator :
-				public std::iterator<std::random_access_iterator_tag,
-					value_type> {
-				public:
-					iterator() : _ptr(0) {}
-					//bla bla
-					//
-				private:
-					pointer _ptr;
-			};
-			class const_iterator :
-				public std::iterator<std::random_access_iterator_tag,
-					const value_type> {
-			};
-			typedef reverse_iterator<iterator> reverse_iterator;
-			typedef reverse_iterator<const_iterator> const_reverse_iterator;
+			typedef random_access_iterator<value_type> iterator;
+			typedef random_access_iterator<const value_type> const_iterator;
+			typedef reverse_iterator_adapter<iterator> reverse_iterator;
+			typedef reverse_iterator_adapter<const_iterator> const_reverse_iterator;
+			//typedef reverse_iterator<const_iterator> const_reverse_iterator;
 
 			typedef ptrdiff_t difference_type;
 			typedef size_t size_type;

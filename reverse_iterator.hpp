@@ -11,9 +11,12 @@ namespace ft {
 			typename Iterator::value_type> {
 		public: //Member types
 			typedef Iterator iterator_type;
-			typedef typename iterator_traits<Iterator>::iterator_category iterator_category;
-			typedef typename iterator_traits<Iterator>::value_type value_type;
-			typedef typename iterator_traits<Iterator>::difference_type difference_type;
+			typedef typename iterator_traits<Iterator>::iterator_category
+				iterator_category;
+			typedef typename iterator_traits<Iterator>::value_type
+				value_type;
+			typedef typename iterator_traits<Iterator>::difference_type
+				difference_type;
 			typedef typename iterator_traits<Iterator>::pointer pointer;
 			typedef typename iterator_traits<Iterator>::reference reference;
 		public:
@@ -22,8 +25,8 @@ namespace ft {
 			explicit reverse_iterator_adapter (iterator_type it) :
 				_base(it) {} //init
 			template <class Iter>
-				reverse_iterator_adapter(const reverse_iterator_adapter<Iter>& rev_base) :
-				   _base(rev_base.base()) {} //copy
+				reverse_iterator_adapter(const reverse_iterator_adapter<Iter>&
+						rev_base) : _base(rev_base.base()) {} //copy
 			//<< (constuctor) <<
 
 			iterator_type base() const {
@@ -117,8 +120,8 @@ namespace ft {
 			return (rev_it + n);
 		}// Addition operator
 	 template <class Iterator>
-		 typename reverse_iterator_adapter<Iterator>::difference_type operator- (
-				 const reverse_iterator_adapter<Iterator>& lhs,
+		 typename reverse_iterator_adapter<Iterator>::difference_type
+		 operator- ( const reverse_iterator_adapter<Iterator>& lhs,
 				 const reverse_iterator_adapter<Iterator>& rhs) {
 			 return (lhs.base() - rhs.base());
 		 } // Subtraction operator

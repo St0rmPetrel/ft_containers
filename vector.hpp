@@ -1,6 +1,8 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
+#include <stdexcept>
+#include <limits>
 #include "reverse_iterator.hpp"
 #include "random_access_iterator.hpp"
 
@@ -18,18 +20,48 @@ namespace ft {
 			typedef random_access_iterator<value_type> iterator;
 			typedef random_access_iterator<const value_type> const_iterator;
 			typedef reverse_iterator_adapter<iterator> reverse_iterator;
-			typedef reverse_iterator_adapter<const_iterator> const_reverse_iterator;
-			//typedef reverse_iterator<const_iterator> const_reverse_iterator;
+			typedef reverse_iterator_adapter<const_iterator>
+				const_reverse_iterator;
 
 			typedef ptrdiff_t difference_type;
 			typedef size_t size_type;
+		public:
+			// >>> constructor >>>
+			explicit vector (const allocator_type& alloc = allocator_type())
+				: _alloc(alloc), _size(0), _capacity(0), _base(NULL) {
+			} // default
+			explicit vector (size_type n, const value_type& val = value_type(),
+					const allocator_type& alloc = allocator_type())
+				: _alloc(alloc), _size(n) {
+					if (n > this->_alloc.max_size()) {
+						throw std::length_error("cannot create ft::vector "
+								"larger than max_size()");
+					}
+					this->_base = this->_alloc.allocate(n);
+					for (size_type i = 0; i < n; ++i) {
+						_alloc.construct(this->_base + i, val);
+					}
+			} // fill
+			template <class InputIterator>
+				vector (InputIterator first, InputIterator last,
+						const allocator_type& alloc = allocator_type()) {
+				} // range
+			vector (const vector& x) {
+			} // copy
+			// <<< constructor <<<
+
+			// >>> CAPACITY >>>
+			size_type max_size() const {
+				return (this->_alloc.max_size());
+			}
+			// <<< CAPACITY <<<
 
 		private:
+			allocator_type _alloc;
 			size_type _size;
 			size_type _capacity;
-			size_type _max_size;
 			pointer   _base;
-			//bla bla
+
 	}; /* class vector */
 }; /* namespace ft */
 

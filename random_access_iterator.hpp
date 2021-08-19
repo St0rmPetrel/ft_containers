@@ -14,7 +14,7 @@ namespace ft {
 			typedef ValueType& reference;
 			typedef std::random_access_iterator_tag iterator_category;
 		public:
-			random_access_iterator() : _base(nullptr) {}
+			random_access_iterator() : _base(NULL) {}
 			random_access_iterator(pointer ptr) : _base(ptr) {}
 			random_access_iterator (const random_access_iterator& src)
 				: _base(src.base()) {}

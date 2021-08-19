@@ -15,6 +15,12 @@ namespace ft {
 			class iterator :
 				public std::iterator<std::random_access_iterator_tag,
 					value_type> {
+				public:
+					iterator() : _ptr(0) {}
+					//bla bla
+					//
+				private:
+					pointer _ptr;
 			};
 			class const_iterator :
 				public std::iterator<std::random_access_iterator_tag,
@@ -23,10 +29,14 @@ namespace ft {
 			typedef reverse_iterator<iterator> reverse_iterator;
 			typedef reverse_iterator<const_iterator> const_reverse_iterator;
 
-			typedef iterator_traits<iterator>::difference_type difference_type;
+			typedef ptrdiff_t difference_type;
 			typedef size_t size_type;
 
 		private:
+			size_type _size;
+			size_type _capacity;
+			size_type _max_size;
+			pointer   _base;
 			//bla bla
 	}; /* class vector */
 }; /* namespace ft */

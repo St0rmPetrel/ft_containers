@@ -1,8 +1,11 @@
 #include <vector>
-#include "vector.hpp"
+#include <iostream>
+//#include "vector.hpp"
 
 int main() {
-	std::vector<const int>	a;
+	std::vector<int>	a = {1, 2};
+	std::vector<int>::iterator<int> it = a.begin();
+	int b; *it = b;
 
-	//a.push_back(10);
+	std::cout << b;
 }

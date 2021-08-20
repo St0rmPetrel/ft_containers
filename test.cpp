@@ -3,9 +3,7 @@
 #include <vector>
 
 int main() {
-	std::vector<int> a;
-	ft::vector<int> b(a.max_size() + 1);
+	ft::vector<int> a(4);
 
-	std::cout << a.max_size() << std::endl;
-	std::cout << b.max_size() << std::endl;
+	ft::vector<int> b(a);
 }

@@ -146,6 +146,9 @@ namespace ft {
 			size_type capacity() const {
 				return (this->_capacity);
 			}
+			bool empty() const {
+				return (this->size() == 0);
+			}
 			void reserve (size_type n) {
 				if (n <= this->_capacity) {
 					return ;

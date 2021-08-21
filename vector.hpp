@@ -33,7 +33,7 @@ namespace ft {
 			explicit vector (size_type n, const value_type& val = value_type(),
 					const allocator_type& alloc = allocator_type())
 				: _alloc(alloc), _size(n) {
-					if (this->_size > this->_alloc.max_size()) {
+					if (this->_size > this->max_size()) {
 						throw std::length_error("cannot create ft::vector "
 								"larger than max_size()");
 					}
@@ -48,7 +48,7 @@ namespace ft {
 						const allocator_type& alloc = allocator_type())
 				: _alloc(alloc) {
 					this->_size = std::distance<InputIterator>(first, last);
-					if (this->_size > this->_alloc.max_size()) {
+					if (this->_size > this->max_size()) {
 						throw std::length_error("cannot create ft::vector "
 								"larger than max_size()");
 					}
@@ -82,6 +82,19 @@ namespace ft {
 			}
 			// <<< destructor <<<
 
+			vector& operator= (const vector& x) {
+				this->resize(0);
+				this->reserve(x.size());
+				vector::const_iterator it;
+				size_type i;
+				for (it = x.begin(), i = 0; it != x.end(); ++it, ++i) {
+					this->_alloc.construct(this->_base + i, *it);
+				}
+				this->_size = x.size();
+				return (*this);
+			}
+
+
 			// >>> ITERATORS >>>
 			iterator begin() {
 				return (vector::iterator(this->_base));
@@ -98,14 +111,45 @@ namespace ft {
 			// <<< ITERATORS <<<
 
 			// >>> CAPACITY >>>
-			size_type max_size() const {
-				return (this->_alloc.max_size());
-			}
 			size_type size() const {
 				return (this->_size);
 			}
+			size_type max_size() const {
+				return (this->_alloc.max_size());
+			}
+			void resize (size_type n, value_type val = value_type()) {
+				if (n > this->capacity()) {
+					this->reserve(n);
+				}
+				for (size_type i = this->size(); i < n; ++i) {
+					this->_alloc.construct(this->_base + i, val);
+				}
+				for (size_type i = n; i < this->size(); ++i) {
+					this->_alloc.destroy(this->_base + i);
+				}
+				this->_size = n;
+				return ;
+			}
 			size_type capacity() const {
 				return (this->_capacity);
+			}
+			void reserve (size_type n) {
+				if (n <= this->_capacity) {
+					return ;
+				}
+				if (n > this->max_size()) {
+					throw std::length_error("cannot create ft::vector "
+							"larger than max_size()");
+				}
+				pointer new_base = this->_alloc.allocate(n);
+				for (size_type i = 0; i < this->size(); ++i) {
+					this->_alloc.construct(new_base + i, *(this->_base + i));
+					this->_alloc.destroy(this->_base + i);
+				}
+				this->_alloc.deallocate(this->_base, this->capacity());
+				this->_base = new_base;
+				this->_capacity = n;
+				return ;
 			}
 			// <<< CAPACITY <<<
 

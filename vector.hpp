@@ -1,6 +1,8 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
+#include <sstream>
+#include <string>
 #include <stdexcept>
 #include <limits>
 #include "reverse_iterator.hpp"
@@ -169,6 +171,35 @@ namespace ft {
 			}
 			// <<< CAPACITY <<<
 
+			// >>> ELEMEMNT ACCESS >>>
+			reference operator[] (size_type n) {
+				return (*(this->_base + n));
+			}
+			const_reference operator[] (size_type n) const {
+				return (*(this->_base + n));
+			}
+			reference at (size_type n) {
+				this->_range_check(n);
+				return (*(this->_base + n));
+			}
+			const_reference at (size_type n) const {
+				this->_range_check(n);
+				return (*(this->_base + n));
+			}
+			reference front() {
+				return (*(this->begin()));
+			}
+			const_reference front() const {
+				return (*(this->begin()));
+			}
+			reference back() {
+				return (*(this->end() - 1));
+			}
+			const_reference back() const {
+				return (*(this->end() - 1));
+			}
+			// <<< ELEMEMNT ACCESS <<<
+
 			// >>> ALLOCATOR >>>
 			allocator_type get_allocator() const {
 				return (this->_alloc);
@@ -181,6 +212,15 @@ namespace ft {
 			size_type _capacity;
 			pointer   _base;
 
+			void _range_check(size_type n) {
+				if (n >= this->size()) {
+					std::stringstream s;
+					s << "vector::_range_check: n (which is " << n << ")";
+					s << " >= this->size() (which is " << this->size() << ")";
+					throw std::out_of_range(s.str());
+				}
+				return ;
+			}
 	}; /* class vector */
 }; /* namespace ft */
 

@@ -6,6 +6,7 @@ int main ()
 {
   ft::vector<int> myvector (2);  // 5 default-constructed ints
 
+  myvector.at(10);
   ft::vector<int>::reverse_iterator rit = myvector.rbegin();
 
   int i=0;

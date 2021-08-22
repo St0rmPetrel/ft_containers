@@ -85,7 +85,7 @@ namespace ft {
 			// <<< destructor <<<
 
 			vector& operator= (const vector& x) {
-				this->resize(0);
+				this->clear();
 				this->reserve(x.size());
 				vector::const_iterator it;
 				size_type i;
@@ -200,6 +200,54 @@ namespace ft {
 			}
 			// <<< ELEMEMNT ACCESS <<<
 
+			// >>> MODIFIERS >>>
+			template <class InputIterator>
+				void assign (InputIterator first, InputIterator last) {
+					this->clear();
+					this->reserve(std::distance<InputIterator>(first, last));
+					InputIterator it;
+					size_type i;
+					for (it = first, i = 0; it != last; ++it, ++i) {
+						this->_alloc.construct(this->_base + i, *it);
+					}
+				} // range
+			void assign (size_type n, const value_type& val) {
+				this->clear();
+				this->reserve(n);
+				for (size_type i = 0; i < n; ++i) {
+					this->_alloc.construct(this->_base + i, val);
+				}
+			} // fill
+			void push_back (const value_type& val) {
+				this->_capacity_extension();
+				this->_alloc.construct(&(*this->end()), val);
+				++(this->_size);
+			}
+			void pop_back() {
+				this->_alloc.destroy(&(*this->rbegin()));
+				--(this->_size);
+			}
+				// > insert >
+			iterator insert (iterator position, const value_type& val) {
+			} // single element
+			void insert (iterator position, size_type n, const value_type& val) {
+			} // fill
+			template <class InputIterator>
+    			void insert (iterator position, InputIterator first,
+						InputIterator last) {
+				} // range
+				// < insert <
+			iterator erase (iterator position) {
+			}
+			iterator erase (iterator first, iterator last) {
+			}
+			void swap (vector& x) {
+			}
+			void clear() {
+				this->resize(0);
+			}
+			// <<< MODIFIERS <<<
+
 			// >>> ALLOCATOR >>>
 			allocator_type get_allocator() const {
 				return (this->_alloc);
@@ -219,6 +267,14 @@ namespace ft {
 					s << " >= this->size() (which is " << this->size() << ")";
 					throw std::out_of_range(s.str());
 				}
+				return ;
+			}
+
+			void _capacity_extension() {
+				if (this->size() < this->capacity()) {
+					return ;
+				}
+				this->reserve(2 * (this->size() + 1));
 				return ;
 			}
 	}; /* class vector */

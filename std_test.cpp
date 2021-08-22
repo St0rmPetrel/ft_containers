@@ -1,22 +1,22 @@
+// vector::pop_back
 #include <iostream>
 #include <vector>
 
 int main ()
 {
-  std::vector<int> myvector (2);  // 5 default-constructed ints
+  std::vector<int> myvector;
+  int sum (0);
+  myvector.push_back (100);
+  myvector.push_back (200);
+  myvector.push_back (300);
 
-  myvector.at(5);
+  while (!myvector.empty())
+  {
+    sum+=myvector.back();
+    myvector.pop_back();
+  }
 
-  std::vector<int>::reverse_iterator rit = myvector.rbegin();
-
-  int i=0;
-  for (rit = myvector.rbegin(); rit!= myvector.rend(); ++rit)
-    *rit = ++i;
-
-  std::cout << "myvector contains:";
-  for (std::vector<int>::iterator it = myvector.begin(); it != myvector.end(); ++it)
-    std::cout << ' ' << *it;
-  std::cout << '\n';
+  std::cout << "The elements of myvector add up to " << sum << '\n';
 
   return 0;
 }

@@ -238,25 +238,27 @@ namespace ft {
 				this->_alloc.construct(&(*position), val);
 				return (position);
 			} // single element
-			void insert (iterator position, size_type n,
-					const value_type& val) {
-				this->_right_shift_extension(position, n);
-				for (size_type i = 0; i < n; ++i) {
-					this->_alloc.construct(&(*position) + i, val);
-				}
-			} // fill
-			template <class InputIterator>
-    			void insert (iterator position, InputIterator first,
-						InputIterator last) {
-					this->_right_shift_extension(position,
-							std::distance<InputIterator>(first, last));
-					size_type i;
-					iterator it;
-					for (i = 0, it = first; it != last; ++it, ++i) {
-						this->_alloc.construct(&(*position) + i, *it);
-					}
-				} // range
-				// < insert <
+			//void insert (iterator position, size_type n,
+			//		const value_type& val) {
+			//	this->_right_shift_extension(position, n);
+			//	for (size_type i = 0; i < n; ++i) {
+			//		this->_alloc.construct(&(*position) + i, val);
+			//	}
+			//} // fill
+			//template < class InputIterator,
+			//		 class = typename ft::enable_if<
+			//			 !std::is_integral<InputIterator>::value>::type> // !!!
+    		//	void insert (iterator position, InputIterator first,
+			//			InputIterator last) {
+			//		this->_right_shift_extension(position,
+			//				std::distance<InputIterator>(first, last));
+			//		size_type i;
+			//		InputIterator it;
+			//		for (i = 0, it = first; it != last; ++it, ++i) {
+			//			this->_alloc.construct(&(*position) + i, *it);
+			//		}
+			//	} // range
+			//	// < insert <
 			iterator erase (iterator position) {
 			}
 			iterator erase (iterator first, iterator last) {
@@ -325,21 +327,21 @@ namespace ft {
 				} else {
 					this->_alloc_size_check(new_size);
 					pointer new_base = this->_alloc.allocate(new_size);
-					for (iterator it = this->begin(); it != position; ++it) {
+					for (iterator it = this->begin(); it < position; ++it) {
 						this->_alloc.construct(new_base + (it - this->begin())
 									, *(it));
 						this->_alloc.destroy(&(*it));
-					} //copy right part in new_base
-					for (iterator it = position; it != this->end(); ++it) {
+					} //copy left part in new_base
+					for (iterator it = position; it < this->end(); ++it) {
 						this->_alloc.construct(new_base + n +
 								(it - this->begin()), *it);
 						this->_alloc.destroy(&(*it));
-					} // copy left part in new_base
+					} // copy right part in new_base
 					this->_alloc.deallocate(this->_base, this->capacity());
 					this->_base = new_base;
 					this->_capacity = new_size;
-					this->_size = new_size;
 				}
+				this->_size = new_size;
 				return ;
 			}
 	}; /* class vector */

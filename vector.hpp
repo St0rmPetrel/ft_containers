@@ -10,6 +10,17 @@
 #include "random_access_iterator.hpp"
 
 namespace ft {
+	template<bool Cond, class T = void> struct enable_if {};
+	template<class T> struct enable_if<true, T> { typedef T type; };
+
+//	template<typename> struct is_integral_base: std::false_type {};
+//
+//	template<> struct is_integral_base<bool>: std::true_type {};
+//	template<> struct is_integral_base<int>: std::true_type {};
+//	template<> struct is_integral_base<short>: std::true_type {};
+} //ft::enable_if for differ fill and range constructor in vector
+
+namespace ft {
 	template <class Type, class Allocator = std::allocator<Type> >
 	class vector {
 		public:
@@ -43,7 +54,9 @@ namespace ft {
 						this->_alloc.construct(this->_base + i, val);
 					}
 			} // fill
-			template <class InputIterator>
+			template < class InputIterator,
+					 class = typename ft::enable_if<
+						 !std::is_integral<InputIterator>::value>::type> // !!!
 				vector (InputIterator first, InputIterator last,
 						const allocator_type& alloc = allocator_type())
 				: _alloc(alloc) {

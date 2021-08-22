@@ -5,6 +5,7 @@
 #include <string>
 #include <stdexcept>
 #include <limits>
+#include <iterator>
 #include "reverse_iterator.hpp"
 #include "random_access_iterator.hpp"
 
@@ -35,10 +36,7 @@ namespace ft {
 			explicit vector (size_type n, const value_type& val = value_type(),
 					const allocator_type& alloc = allocator_type())
 				: _alloc(alloc), _size(n) {
-					if (this->_size > this->max_size()) {
-						throw std::length_error("cannot create ft::vector "
-								"larger than max_size()");
-					}
+					this->_alloc_size_check(this->_size);
 					this->_base = this->_alloc.allocate(this->_size);
 					this->_capacity = this->_size;
 					for (size_type i = 0; i < n; ++i) {
@@ -50,16 +48,13 @@ namespace ft {
 						const allocator_type& alloc = allocator_type())
 				: _alloc(alloc) {
 					this->_size = std::distance<InputIterator>(first, last);
-					if (this->_size > this->max_size()) {
-						throw std::length_error("cannot create ft::vector "
-								"larger than max_size()");
-					}
+					this->_alloc_size_check(this->_size);
 					this->_base = this->_alloc.allocate(this->_size);
 					this->_capacity = this->_size;
 					InputIterator it;
 					size_type i;
 					for (it = first, i = 0; it != last; ++it, ++i) {
-						this->_alloc.construct(this->_base + i, *it);
+						this->_alloc.construct(this->_base + i, (*it)());
 					}
 				} // range
 			vector (const vector& x)
@@ -155,10 +150,7 @@ namespace ft {
 				if (n <= this->_capacity) {
 					return ;
 				}
-				if (n > this->max_size()) {
-					throw std::length_error("cannot create ft::vector "
-							"larger than max_size()");
-				}
+				this->_alloc_size_check(n);
 				pointer new_base = this->_alloc.allocate(n);
 				for (size_type i = 0; i < this->size(); ++i) {
 					this->_alloc.construct(new_base + i, *(this->_base + i));
@@ -219,7 +211,7 @@ namespace ft {
 				}
 			} // fill
 			void push_back (const value_type& val) {
-				this->_capacity_extension();
+				this->_tail_extension();
 				this->_alloc.construct(&(*this->end()), val);
 				++(this->_size);
 			}
@@ -229,12 +221,27 @@ namespace ft {
 			}
 				// > insert >
 			iterator insert (iterator position, const value_type& val) {
+				this->_right_shift_extension(position, 1);
+				this->_alloc.construct(&(*position), val);
+				return (position);
 			} // single element
-			void insert (iterator position, size_type n, const value_type& val) {
+			void insert (iterator position, size_type n,
+					const value_type& val) {
+				this->_right_shift_extension(position, n);
+				for (size_type i = 0; i < n; ++i) {
+					this->_alloc.construct(&(*position) + i, val);
+				}
 			} // fill
 			template <class InputIterator>
     			void insert (iterator position, InputIterator first,
 						InputIterator last) {
+					this->_right_shift_extension(position,
+							std::distance<InputIterator>(first, last));
+					size_type i;
+					iterator it;
+					for (i = 0, it = first; it != last; ++it, ++i) {
+						this->_alloc.construct(&(*position) + i, *it);
+					}
 				} // range
 				// < insert <
 			iterator erase (iterator position) {
@@ -270,11 +277,56 @@ namespace ft {
 				return ;
 			}
 
-			void _capacity_extension() {
+			void _alloc_size_check(size_type n) {
+				if (n > this->max_size()) {
+					throw std::length_error("cannot create ft::vector "
+							"larger than max_size()");
+				}
+				return ;
+			}
+
+			void _tail_extension() {
 				if (this->size() < this->capacity()) {
 					return ;
 				}
-				this->reserve(2 * (this->size() + 1));
+				if (!this->size()) {
+					this->reserve(1);
+					return ;
+				}
+				this->reserve(2 * (this->size()));
+				return ;
+			}
+
+			void _right_shift_extension(iterator position, size_type n) {
+				size_type new_size = this->size() + n;
+				if ((!n) || ((position == this->end()) &&
+						new_size <= this->capacity())) {
+					return ;
+				}
+				if (new_size <= this->capacity()) {
+					for (reverse_iterator rit = this->rbegin();
+							rit != reverse_iterator(position - 1); ++rit) {
+						this->_alloc.construct(&(*rit) + n, *rit);
+						this->_alloc.destroy(&(*rit));
+					} // shift right part on 'n' elements
+				} else {
+					this->_alloc_size_check(new_size);
+					pointer new_base = this->_alloc.allocate(new_size);
+					for (iterator it = this->begin(); it != position; ++it) {
+						this->_alloc.construct(new_base + (it - this->begin())
+									, *(it));
+						this->_alloc.destroy(&(*it));
+					} //copy right part in new_base
+					for (iterator it = position; it != this->end(); ++it) {
+						this->_alloc.construct(new_base + n +
+								(it - this->begin()), *it);
+						this->_alloc.destroy(&(*it));
+					} // copy left part in new_base
+					this->_alloc.deallocate(this->_base, this->capacity());
+					this->_base = new_base;
+					this->_capacity = new_size;
+					this->_size = new_size;
+				}
 				return ;
 			}
 	}; /* class vector */

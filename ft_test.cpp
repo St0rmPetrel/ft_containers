@@ -5,19 +5,28 @@
 
 int main ()
 {
-  ft::vector<int> myvector;
-  int sum (0);
-  myvector.push_back (100);
-  myvector.push_back (200);
-  myvector.push_back (300);
+  //ft::vector<int> myvector (3,100);
+  ft::vector<int> myvector (3);
+  ft::vector<int>::iterator it;
 
-  while (!myvector.empty())
-  {
-    sum+=myvector.back();
-    myvector.pop_back();
-  }
+  it = myvector.begin();
+  it = myvector.insert ( it , 200 );
 
-  std::cout << "The elements of myvector add up to " << sum << '\n';
+  myvector.insert (it,2,300);
+
+  // "it" no longer valid, get a new one:
+  it = myvector.begin();
+
+  std::vector<int> anothervector (2,400);
+  myvector.insert (it+2,anothervector.begin(),anothervector.end());
+
+  int myarray [] = { 501,502,503 };
+  myvector.insert (myvector.begin(), myarray, myarray+3);
+
+  std::cout << "myvector contains:";
+  for (it=myvector.begin(); it<myvector.end(); it++)
+    std::cout << ' ' << *it;
+  std::cout << '\n';
 
   return 0;
 }

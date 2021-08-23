@@ -13,6 +13,20 @@ namespace ft {
 	template<bool Cond, class T = void> struct enable_if {};
 	template<class T> struct enable_if<true, T> { typedef T type; };
 
+	/* >> lexicographical_compare for vectot relational operators >> */
+	template <class InputIterator1, class InputIterator2>
+		bool lexicographical_compare (
+				InputIterator1 first1, InputIterator1 last1,
+				InputIterator2 first2, InputIterator2 last2) {
+			while (first1!=last1) {
+				if (first2==last2 || *first2<*first1) return false;
+				else if (*first1<*first2) return true;
+				++first1; ++first2;
+			}
+			return (first2!=last2);
+		}
+	/* << lexicographical_compare for vectot relational operators <<  */
+
 //	template<typename> struct is_integral_base: std::false_type {};
 //
 //	template<> struct is_integral_base<bool>: std::true_type {};
@@ -364,6 +378,46 @@ namespace ft {
 				return (first + 1);
 			}
 	}; /* class vector */
+	/* relation operators for vector */
+	template <class T, class Alloc>
+		bool operator== (const vector<T,Alloc>& lhs,
+				const vector<T,Alloc>& rhs) {
+			if (lhs.size() != rhs.size()) {
+				return (false);
+			}
+		}
+	template <class T, class Alloc>
+		bool operator!= (const vector<T,Alloc>& lhs,
+				const vector<T,Alloc>& rhs) {
+			return (!(lhs == rhs));
+		}
+	template <class T, class Alloc>
+		bool operator< (const vector<T,Alloc>& lhs,
+				const vector<T,Alloc>& rhs) {
+			return (ft::lexicographical_compare(lhs.begin(), lhs.end(),
+						rhs.begin(), rhs.end()));
+		}
+	template <class T, class Alloc>
+		bool operator> (const vector<T,Alloc>& lhs,
+				const vector<T,Alloc>& rhs) {
+			return (!(ft::lexicographical_compare(lhs.begin(), lhs.end(),
+						rhs.begin(), rhs.end())));
+		}
+	template <class T, class Alloc>
+		bool operator<= (const vector<T,Alloc>& lhs,
+				const vector<T,Alloc>& rhs) {
+			return (!(lhs > rhs));
+		}
+	template <class T, class Alloc>
+		bool operator>= (const vector<T,Alloc>& lhs,
+				const vector<T,Alloc>& rhs) {
+			return (!(lhs < rhs));
+		}
+	/* relation operators for vector */
+	template <class T, class Alloc>
+		void swap (vector<T,Alloc>& x, vector<T,Alloc>& y) {
+			x.swap(y);
+		}
 }; /* namespace ft */
 
 #endif /* VECTOR_HPP */

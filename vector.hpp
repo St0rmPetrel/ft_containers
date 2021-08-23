@@ -265,6 +265,10 @@ namespace ft {
 				return (this->_left_shift_erase(first, last));
 			}
 			void swap (vector& x) {
+				std::swap(this->_alloc, x._alloc);
+				std::swap(this->_size, x._size);
+				std::swap(this->_capacity, x._capacity);
+				std::swap(this->_base, x._base);
 			}
 			void clear() {
 				this->resize(0);

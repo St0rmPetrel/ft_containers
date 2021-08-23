@@ -1,30 +1,24 @@
 #include "vector.hpp"
+// erasing from vector
 #include <iostream>
 #include <vector>
-// vector::pop_back
 
 int main ()
 {
-  ft::vector<int> myvector (3,100);
-  ft::vector<int>::iterator it;
+  std::vector<int> myvector;
 
-  it = myvector.begin();
-  it = myvector.insert ( it , 200 );
+  // set some values (from 1 to 10)
+  for (int i=1; i<=10; i++) myvector.push_back(i);
 
-  myvector.insert (it,2,300);
+  // erase the 6th element
+  myvector.erase (myvector.begin()+5);
 
-  // "it" no longer valid, get a new one:
-  it = myvector.begin();
-
-  std::vector<int> anothervector (2,400);
-  myvector.insert (it+2,anothervector.begin(),anothervector.end());
-
-  int myarray [] = { 501,502,503 };
-  myvector.insert (myvector.begin(), myarray, myarray+3);
+  // erase the first 3 elements:
+  myvector.erase (myvector.begin(),myvector.begin()+3);
 
   std::cout << "myvector contains:";
-  for (it=myvector.begin(); it<myvector.end(); it++)
-    std::cout << ' ' << *it;
+  for (unsigned i=0; i<myvector.size(); ++i)
+    std::cout << ' ' << myvector[i];
   std::cout << '\n';
 
   return 0;

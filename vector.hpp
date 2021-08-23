@@ -259,8 +259,10 @@ namespace ft {
 				} // range
 				// < insert <
 			iterator erase (iterator position) {
+				return (this->_left_shift_erase(position, position + 1));
 			}
 			iterator erase (iterator first, iterator last) {
+				return (this->_left_shift_erase(first, last));
 			}
 			void swap (vector& x) {
 			}
@@ -344,6 +346,18 @@ namespace ft {
 				this->_capacity = new_size;
 				this->_size = new_size;
 				return (new_position);
+			}
+
+			iterator _left_shift_erase(iterator first, iterator last) {
+				for (iterator it = first; it < last; ++it) {
+					this->_alloc.destroy(&(*it));
+				}
+				for (iterator it = last; it < this->end(); ++it) {
+					this->_alloc.construct(&(*(first + (it - last))), *it);
+					this->_alloc.destroy(&(*it));
+				}
+				this->_size -= last - first;
+				return (first + 1);
 			}
 	}; /* class vector */
 }; /* namespace ft */

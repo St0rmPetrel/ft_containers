@@ -234,31 +234,30 @@ namespace ft {
 			}
 				// > insert >
 			iterator insert (iterator position, const value_type& val) {
-				this->_right_shift_extension(position, 1);
-				this->_alloc.construct(&(*position), val);
-				return (position);
+				iterator new_position = this->_right_shift_extension(position, 1);
+				this->_alloc.construct(&(*new_position), val);
+				return (new_position);
 			} // single element
-			//void insert (iterator position, size_type n,
-			//		const value_type& val) {
-			//	this->_right_shift_extension(position, n);
-			//	for (size_type i = 0; i < n; ++i) {
-			//		this->_alloc.construct(&(*position) + i, val);
-			//	}
-			//} // fill
-			//template < class InputIterator,
-			//		 class = typename ft::enable_if<
-			//			 !std::is_integral<InputIterator>::value>::type> // !!!
-    		//	void insert (iterator position, InputIterator first,
-			//			InputIterator last) {
-			//		this->_right_shift_extension(position,
-			//				std::distance<InputIterator>(first, last));
-			//		size_type i;
-			//		InputIterator it;
-			//		for (i = 0, it = first; it != last; ++it, ++i) {
-			//			this->_alloc.construct(&(*position) + i, *it);
-			//		}
-			//	} // range
-			//	// < insert <
+			void insert (iterator position, size_type n,
+					const value_type& val) {
+				iterator new_position = this->_right_shift_extension(position, n);
+				for (size_type i = 0; i < n; ++i) {
+					this->_alloc.construct(&(*new_position) + i, val);
+				}
+			} // fill
+			template < class InputIterator,
+					 class = typename ft::enable_if<
+						 !std::is_integral<InputIterator>::value>::type> // !!!
+    			void insert (iterator position, InputIterator first,
+						InputIterator last) {
+					iterator new_position = this->_right_shift_extension(position,
+							std::distance<InputIterator>(first, last));
+					for (InputIterator it = first; it != last; ++it) {
+						this->_alloc.construct(&(*new_position) + (it - first),
+								*it);
+					}
+				} // range
+				// < insert <
 			iterator erase (iterator position) {
 			}
 			iterator erase (iterator first, iterator last) {
@@ -312,11 +311,11 @@ namespace ft {
 				return ;
 			}
 
-			void _right_shift_extension(iterator position, size_type n) {
+			iterator _right_shift_extension(iterator position, size_type n) {
 				size_type new_size = this->size() + n;
 				if ((!n) || ((position == this->end()) &&
 						new_size <= this->capacity())) {
-					return ;
+					return position;
 				}
 				if (new_size <= this->capacity()) {
 					for (reverse_iterator rit = this->rbegin();
@@ -324,25 +323,27 @@ namespace ft {
 						this->_alloc.construct(&(*rit) + n, *rit);
 						this->_alloc.destroy(&(*rit));
 					} // shift right part on 'n' elements
-				} else {
-					this->_alloc_size_check(new_size);
-					pointer new_base = this->_alloc.allocate(new_size);
-					for (iterator it = this->begin(); it < position; ++it) {
-						this->_alloc.construct(new_base + (it - this->begin())
-									, *(it));
-						this->_alloc.destroy(&(*it));
-					} //copy left part in new_base
-					for (iterator it = position; it < this->end(); ++it) {
-						this->_alloc.construct(new_base + n +
-								(it - this->begin()), *it);
-						this->_alloc.destroy(&(*it));
-					} // copy right part in new_base
-					this->_alloc.deallocate(this->_base, this->capacity());
-					this->_base = new_base;
-					this->_capacity = new_size;
+					this->_size = new_size;
+					return position;
 				}
+				this->_alloc_size_check(new_size);
+				pointer new_base = this->_alloc.allocate(new_size);
+				for (iterator it = this->begin(); it < position; ++it) {
+					this->_alloc.construct(new_base + (it - this->begin())
+								, *(it));
+					this->_alloc.destroy(&(*it));
+				} //copy left part in new_base
+				for (iterator it = position; it < this->end(); ++it) {
+					this->_alloc.construct(new_base + n +
+							(it - this->begin()), *it);
+					this->_alloc.destroy(&(*it));
+				} // copy right part in new_base
+				this->_alloc.deallocate(this->_base, this->capacity());
+				iterator new_position = new_base + (position - this->begin());
+				this->_base = new_base;
+				this->_capacity = new_size;
 				this->_size = new_size;
-				return ;
+				return (new_position);
 			}
 	}; /* class vector */
 }; /* namespace ft */

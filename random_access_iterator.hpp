@@ -76,6 +76,31 @@ namespace ft {
 		private:
 			pointer _base;
 	};
+	template < typename ValueType >
+	class const_random_access_iterator
+		: public random_access_iterator<const ValueType> {
+			public:
+			typedef ValueType* pointer;
+			typedef const ValueType const_ValueType;
+
+			const_random_access_iterator()
+				: random_access_iterator<const_ValueType>() {}
+			const_random_access_iterator(
+					const random_access_iterator<ValueType>& src)
+				: random_access_iterator<const_ValueType>(src.base()) {}
+			const_random_access_iterator<const_ValueType>(pointer ptr)
+				: random_access_iterator<const_ValueType>(ptr) {}
+			const_random_access_iterator (const const_random_access_iterator&
+					src)
+				: random_access_iterator<const_ValueType>(src.base()) {}
+			const_random_access_iterator& operator= (
+					const const_random_access_iterator& src) {
+				if (this != &src)
+					this->_base = src.base();
+				return (*this);
+			}
+			~const_random_access_iterator() {}
+	};
 
 	// >>> Non-member function overloads for random_access_iterator >>>
 		// >> relational operators (random_access_iterator) >>

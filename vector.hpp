@@ -63,7 +63,8 @@ namespace ft {
 					InputIterator it;
 					size_type i;
 					for (it = first, i = 0; it != last; ++it, ++i) {
-						this->_alloc.construct(this->_base + i, (*it)());
+						//this->_alloc.construct(this->_base + i, (*it)());
+						this->_alloc.construct(this->_base + i, *it);
 					}
 				} // range
 			vector (const vector& x)
@@ -252,8 +253,8 @@ namespace ft {
 					iterator new_position = this->_right_shift_extension(position,
 							std::distance<InputIterator>(first, last));
 					for (InputIterator it = first; it != last; ++it) {
-						this->_alloc.construct(&(*new_position) + (it - first),
-								*it);
+						this->_alloc.construct(&(*new_position) +
+								std::distance(first, it), *it);
 					}
 				} // range
 				// < insert <

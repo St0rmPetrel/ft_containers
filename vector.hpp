@@ -45,9 +45,15 @@ namespace ft {
 						this->_alloc.construct(this->_base + i, val);
 					}
 			} // fill
-			template < class InputIterator, typename ft::enable_if<
-						 !ft::is_integral<InputIterator>::value>::type>
-				vector (InputIterator first, InputIterator last,
+		//	template < class InputIterator, typename ft::enable_if<
+		//				 !ft::is_integral<InputIterator>::value>::type>
+		//		vector (InputIterator first, InputIterator last,
+		//				const allocator_type& alloc = allocator_type())
+			template <class InputIterator>
+				vector (InputIterator first,
+						typename ft::enable_if< 
+						!std::numeric_limits<InputIterator>::is_integer,
+						InputIterator >::type last,
 						const allocator_type& alloc = allocator_type())
 				: _alloc(alloc) {
 					this->_size = std::distance<InputIterator>(first, last);
@@ -197,7 +203,10 @@ namespace ft {
 
 			// >>> MODIFIERS >>>
 			template <class InputIterator>
-				void assign (InputIterator first, InputIterator last) {
+				void assign (InputIterator first, 
+					typename ft::enable_if<
+					!std::numeric_limits<InputIterator>::is_integer,
+					InputIterator >::type last) {
 					this->clear();
 					this->reserve(std::distance<InputIterator>(first, last));
 					InputIterator it;
@@ -235,10 +244,11 @@ namespace ft {
 					this->_alloc.construct(&(*new_position) + i, val);
 				}
 			} // fill
-			template < class InputIterator, typename ft::enable_if<
-						 !ft::is_integral<InputIterator>::value>::type>
-    			void insert (iterator position, InputIterator first,
-						InputIterator last) {
+			template <class InputIterator>
+				void insert (iterator position, InputIterator first,
+					typename ft::enable_if<
+					!std::numeric_limits<InputIterator>::is_integer,
+					InputIterator >::type last) {
 					iterator new_position = this->_right_shift_extension(position,
 							std::distance<InputIterator>(first, last));
 					for (InputIterator it = first; it != last; ++it) {
@@ -276,7 +286,7 @@ namespace ft {
 			size_type _capacity;
 			pointer   _base;
 
-			void _range_check(size_type n) {
+			void _range_check(size_type n) const {
 				if (n >= this->size()) {
 					std::stringstream s;
 					s << "vector::_range_check: n (which is " << n << ")";
@@ -286,7 +296,7 @@ namespace ft {
 				return ;
 			}
 
-			void _alloc_size_check(size_type n) {
+			void _alloc_size_check(size_type n) const {
 				if (n > this->max_size()) {
 					throw std::length_error("cannot create ft::vector "
 							"larger than max_size()");

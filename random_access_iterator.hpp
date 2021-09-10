@@ -73,7 +73,7 @@ namespace ft {
 			reference operator[] (difference_type n) const {
 				return (*(this->base() + n));
 			}
-		private:
+		protected:
 			pointer _base;
 	};
 	template < typename ValueType >

@@ -74,7 +74,7 @@ namespace ft {
 				return &(operator*());
 			}
 			reference operator[] (difference_type n) const {
-				return (this->base()[-n-1]);
+				return (this->base()[-n]);
 			}
 		private:
 			iterator_type _base;
@@ -82,34 +82,34 @@ namespace ft {
 
 	// >>> Non-member function overloads for reverse_iterator_adapter >>>
 		// >> relational operators (reverse_iterator_adapter) >>
-	template <class Iterator>
-		bool operator== (const reverse_iterator_adapter<Iterator>& lhs,
-				const reverse_iterator_adapter<Iterator>& rhs) {
+	template <class IteratorL, class IteratorR>
+		bool operator== (const reverse_iterator_adapter<IteratorL>& lhs,
+				const reverse_iterator_adapter<IteratorR>& rhs) {
 			return (lhs.base() == rhs.base());
 		}
-	template <class Iterator>
-		bool operator!= (const reverse_iterator_adapter<Iterator>& lhs,
-				const reverse_iterator_adapter<Iterator>& rhs) {
+	template <class IteratorL, class IteratorR>
+		bool operator!= (const reverse_iterator_adapter<IteratorL>& lhs,
+				const reverse_iterator_adapter<IteratorR>& rhs) {
 			return (lhs.base() != rhs.base());
 		}
-	template <class Iterator>
-		bool operator< (const reverse_iterator_adapter<Iterator>& lhs,
-				const reverse_iterator_adapter<Iterator>& rhs) {
+	template <class IteratorL, class IteratorR>
+		bool operator< (const reverse_iterator_adapter<IteratorL>& lhs,
+				const reverse_iterator_adapter<IteratorR>& rhs) {
 			return (lhs.base() > rhs.base());
 		}
-	template <class Iterator>
-		bool operator<= (const reverse_iterator_adapter<Iterator>& lhs,
-				const reverse_iterator_adapter<Iterator>& rhs) {
+	template <class IteratorL, class IteratorR>
+		bool operator<= (const reverse_iterator_adapter<IteratorL>& lhs,
+				const reverse_iterator_adapter<IteratorR>& rhs) {
 			return (lhs.base() >= rhs.base());
 		}
-	template <class Iterator>
-		bool operator> (const reverse_iterator_adapter<Iterator>& lhs,
-				const reverse_iterator_adapter<Iterator>& rhs) {
+	template <class IteratorL, class IteratorR>
+		bool operator> (const reverse_iterator_adapter<IteratorL>& lhs,
+				const reverse_iterator_adapter<IteratorR>& rhs) {
 			return (lhs.base() < rhs.base());
 		}
-	template <class Iterator>
-		bool operator>= (const reverse_iterator_adapter<Iterator>& lhs,
-				const reverse_iterator_adapter<Iterator>& rhs) {
+	template <class IteratorL, class IteratorR>
+		bool operator>= (const reverse_iterator_adapter<IteratorL>& lhs,
+				const reverse_iterator_adapter<IteratorR>& rhs) {
 			return (lhs.base() <= rhs.base());
 		}
 		// << relational operators (reverse_iterator_adapter) <<
@@ -119,10 +119,10 @@ namespace ft {
 				const reverse_iterator_adapter<Iterator>& rev_it) {
 			return (rev_it + n);
 		}// Addition operator
-	 template <class Iterator>
-		 typename reverse_iterator_adapter<Iterator>::difference_type
-		 operator- ( const reverse_iterator_adapter<Iterator>& lhs,
-				 const reverse_iterator_adapter<Iterator>& rhs) {
+	 template <class IteratorL, class IteratorR>
+		 typename reverse_iterator_adapter<IteratorL>::difference_type
+		 operator- ( const reverse_iterator_adapter<IteratorL>& lhs,
+				 const reverse_iterator_adapter<IteratorR>& rhs) {
 			 return (lhs.base() - rhs.base());
 		 } // Subtraction operator
 	// <<< Non-member function overloads for reverse_iterator_adapter <<<

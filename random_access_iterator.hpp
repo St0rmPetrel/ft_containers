@@ -5,6 +5,9 @@
 
 namespace ft {
 	template < typename ValueType >
+	class const_random_access_iterator;
+
+	template < typename ValueType >
 	class random_access_iterator :
 		public std::iterator<std::random_access_iterator_tag, ValueType> {
 		public:
@@ -73,65 +76,66 @@ namespace ft {
 			reference operator[] (difference_type n) const {
 				return (*(this->base() + n));
 			}
+
+			operator random_access_iterator<const ValueType>() const {
+				return random_access_iterator<const ValueType>(this->base());
+			}
+			bool operator==(const random_access_iterator &other) const {
+				return this->base() == other.base();
+			}
+			bool operator!=(const random_access_iterator &other) const {
+				return this->base() != other.base();
+			}
+			bool operator<(const random_access_iterator &other) const {
+				return this->base() < other.base();
+			}
+			bool operator<=(const random_access_iterator &other) const {
+				return this->base() <= other.base();
+			}
+			bool operator>(const random_access_iterator &other) const {
+				return this->base() > other.base();
+			}
+			bool operator>=(const random_access_iterator &other) const {
+				return this->base() >= other.base();
+			}
+
+			difference_type operator- (
+					const random_access_iterator &other) const {
+				return (this->base() - other.base());
+			}
 		protected:
 			pointer _base;
 	};
-	template < typename ValueType >
-	class const_random_access_iterator
-		: public random_access_iterator<const ValueType> {
-			public:
-			typedef ValueType* pointer;
-			typedef const ValueType const_ValueType;
-
-			const_random_access_iterator()
-				: random_access_iterator<const_ValueType>() {}
-			const_random_access_iterator(
-					const random_access_iterator<ValueType>& src)
-				: random_access_iterator<const_ValueType>(src.base()) {}
-			const_random_access_iterator<const_ValueType>(pointer ptr)
-				: random_access_iterator<const_ValueType>(ptr) {}
-			const_random_access_iterator (const const_random_access_iterator&
-					src)
-				: random_access_iterator<const_ValueType>(src.base()) {}
-			const_random_access_iterator& operator= (
-					const const_random_access_iterator& src) {
-				if (this != &src)
-					this->_base = src.base();
-				return (*this);
-			}
-			~const_random_access_iterator() {}
-	};
-
 	// >>> Non-member function overloads for random_access_iterator >>>
 		// >> relational operators (random_access_iterator) >>
 	template < class ValueType >
 		bool operator== (const random_access_iterator<ValueType>& lhs,
-				const random_access_iterator<ValueType>& rhs) {
+				const random_access_iterator<const ValueType>& rhs) {
 			return (lhs.base() == rhs.base());
 		}
 	template < class ValueType >
 		bool operator!= (const random_access_iterator<ValueType>& lhs,
-				const random_access_iterator<ValueType>& rhs) {
+				const random_access_iterator<const ValueType>& rhs) {
 			return (lhs.base() != rhs.base());
 		}
 	template < class ValueType >
 		bool operator< (const random_access_iterator<ValueType>& lhs,
-				const random_access_iterator<ValueType>& rhs) {
+				const random_access_iterator<const ValueType>& rhs) {
 			return (lhs.base() < rhs.base());
 		}
 	template < class ValueType >
 		bool operator<= (const random_access_iterator<ValueType>& lhs,
-				const random_access_iterator<ValueType>& rhs) {
+				const random_access_iterator<const ValueType>& rhs) {
 			return (lhs.base() <= rhs.base());
 		}
 	template < class ValueType >
 		bool operator> (const random_access_iterator<ValueType>& lhs,
-				const random_access_iterator<ValueType>& rhs) {
+				const random_access_iterator<const ValueType>& rhs) {
 			return (lhs.base() > rhs.base());
 		}
 	template < class ValueType >
 		bool operator>= (const random_access_iterator<ValueType>& lhs,
-				const random_access_iterator<ValueType>& rhs) {
+				const random_access_iterator<const ValueType>& rhs) {
 			return (lhs.base() >= rhs.base());
 		}
 		// << relational operators (random_access_iterator) <<
@@ -145,10 +149,11 @@ namespace ft {
 	 template <class ValueType >
 		 typename random_access_iterator<ValueType>::difference_type operator- (
 				 const random_access_iterator<ValueType>& lhs,
-				 const random_access_iterator<ValueType>& rhs) {
+				 const random_access_iterator<const ValueType>& rhs) {
 			 return (lhs.base() - rhs.base());
 		 } // Subtraction operator
 	// <<< Non-member function overloads for reverse_iterator <<<
+
 } /* namespace ft */
 
 #endif /* RANDOM_ACCESS_ITERATOR_HPP */

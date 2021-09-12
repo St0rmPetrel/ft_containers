@@ -364,7 +364,7 @@ namespace ft {
 					this->_alloc.destroy(&(*it));
 				}
 				this->_size -= last - first;
-				return (first + 1);
+				return (first);
 			}
 	}; /* class vector */
 	/* relation operators for vector */

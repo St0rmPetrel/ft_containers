@@ -215,13 +215,16 @@ namespace ft {
 					for (it = first, i = 0; it != last; ++it, ++i) {
 						this->_alloc.construct(this->_base + i, *it);
 					}
+					this->_size = i;
 				} // range
 			void assign (size_type n, const value_type& val) {
 				this->clear();
 				this->reserve(n);
-				for (size_type i = 0; i < n; ++i) {
+				size_type i;
+				for (i = 0; i < n; ++i) {
 					this->_alloc.construct(this->_base + i, val);
 				}
+				this->_size = i;
 			} // fill
 			void push_back (const value_type& val) {
 				this->_tail_extension();

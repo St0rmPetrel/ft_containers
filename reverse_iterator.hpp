@@ -123,6 +123,7 @@ namespace ft {
 		 typename reverse_iterator_adapter<IteratorL>::difference_type
 		 operator- ( const reverse_iterator_adapter<IteratorL>& lhs,
 				 const reverse_iterator_adapter<IteratorR>& rhs) {
+			 //return (rhs.base() - lhs.base());
 			 return (lhs.base() - rhs.base());
 		 } // Subtraction operator
 	// <<< Non-member function overloads for reverse_iterator_adapter <<<

@@ -35,6 +35,12 @@ namespace ft {
 					p(NULL),
 					c(Black) {}
 				~Treenode() {}
+
+				build(const key_type& k = key_type(),
+						const value_type& v = value_type()) {
+					this->key = RBTree::_key_alloc.allocate(1);
+					this->key = RBTree::_key_alloc.allocate(1);
+				}
 			} node_type;
 
 		public:

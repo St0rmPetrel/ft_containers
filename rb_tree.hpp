@@ -2,6 +2,7 @@
 #define RB_TREE_HPP
 
 #include <functional>
+#include <memory>
 
 namespace ft {
 	template <  class Key,
@@ -18,30 +19,37 @@ namespace ft {
 			typedef AllocatorT   value_allocator_type;
 		private:
 			enum Color { Red, Black };
-			typedef struct Treenode {
+			typedef struct TreeNode {
 				key_type    *key;
 				value_type  *data;
 
 				Color       c;
-				Treenode    *left;
-				Treenode    *right;
-				Treenode    *p;
+				TreeNode    *left;
+				TreeNode    *right;
+				TreeNode    *p;
 
-				Treenode()
+				TreeNode()
 					: key(NULL),
 					data(NULL),
 					left(NULL),
 					right(NULL),
 					p(NULL),
-					c(Black) {}
-				~Treenode() {}
-
-				build(const key_type& k = key_type(),
-						const value_type& v = value_type()) {
-					this->key = RBTree::_key_alloc.allocate(1);
-					this->key = RBTree::_key_alloc.allocate(1);
-				}
+					c(Red) {}
+				~TreeNode() {}
 			} node_type;
+		public:
+			typedef struct FrontNode {
+				bool            is_exist;
+				const key_type& key;
+				value_type*     data;
+
+				explicit FrontNode(const key_type& key,
+						value_type* data = NULL)
+					: key(key), data(data), is_exist(false) {}
+				~FrontNode() {}
+				private:
+					FrontNode();
+			} front_node_type;
 
 		public:
 			explicit RBTree(
@@ -49,7 +57,8 @@ namespace ft {
 					const value_allocator_type& value_alloc =
 						value_allocator_type())
 				: _key_alloc(key_alloc), _value_alloc(value_alloc) {
-				this->_null_node = new Treenode;
+				this->_null_node = new TreeNode;
+				this->_null_node->c = Black;
 				this->_root = this->_null_node;
 			}
 			~RBTree() {
@@ -57,8 +66,14 @@ namespace ft {
 				delete this->_null_node;
 			}
 
-			value_type& search(const key_type& k) {
-				return (_search(this->_root, k)->data);
+			front_node_type search(const key_type& k) {
+				front_node_type ret_node(k);
+				node_type* under_node = _search(this->_root, k);
+				if (!_is_null_node(under_node)) {
+					ret_node.data = under_node->data;
+					ret_node.is_exist = true;
+				}
+				return ret_node;
 			}
 
 		private:

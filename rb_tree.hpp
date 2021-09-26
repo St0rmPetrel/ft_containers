@@ -86,13 +86,16 @@ namespace ft {
 			void insert(const key_type& k, value_type* data = NULL) {
 				node_type* new_node = _create_node(k, data);
 				_bst_insert_node(new_node);
-				// _insert_fix_up(new_node);
+				_insert_fixup(new_node);
 			}
+			//DEBUG
 			void debug() {
 				this->_debug(this->_root);
 			}
+			//DEBUG
 
 		private:
+			//DEBUG
 			void _debug(node_type *x) {
 				if (!this->_is_null_node(x)) {
 					_debug(x->left);
@@ -100,6 +103,7 @@ namespace ft {
 					_debug(x->right);
 				}
 			}
+			//DEBUG
 			void _bst_insert_node(node_type* z) {
 				node_type* y = _null_node;
 				node_type* x = _root;
@@ -121,6 +125,49 @@ namespace ft {
 						y->right = z;
 					}
 				}
+			}
+			void _insert_fixup(node_type *z) {
+				node_type* y = _null_node;
+				while (z->p->c == Red) {
+					// Z is son of left parent (has righ uncle)
+					if (z->p == z->p->p->left) {
+						y = z->p->p->right;
+						// Red uncle (just recolor)
+						if (y->c == Red) {
+							z->p->c = Black;
+							y->c = Red;
+							z = z->p->p;
+						// Black uncle (with rotation)
+						} else {
+							if (z == z->p->right) {
+								z = z->p;
+								_left_rotate(z);
+							}
+							z->p->c = Black;
+							z->p->p->c = Red;
+							_right_rotate(z->p->p);
+						}
+					// Z is son of righ parent (has left uncle)
+					} else {
+						y = z->p->p->left;
+						// Red uncle (just recolor)
+						if (y->c == Red) {
+							z->p->c = Black;
+							y->c = Red;
+							z = z->p->p;
+						// Black uncle (with rotation)
+						} else {
+							if (z == z->p->left) {
+								z = z->p;
+								_right_rotate(z);
+							}
+							z->p->c = Black;
+							z->p->p->c = Red;
+							_left_rotate(z->p->p);
+						}
+					}
+				}
+				_root->c = Black;
 			}
 			void _inorder_tree_delete(node_type *x) {
 				if (!this->_is_null_node(x)) {
@@ -160,36 +207,36 @@ namespace ft {
 			void _left_rotate(node_type* x) {
 				node_type* y = x->right;
 				x->right = y->left;
-				if (!this->_is_null_node(y->left)) {
-					y->left->parent = x;
+				if (!_is_null_node(y->left)) {
+					y->left->p = x;
 				}
-				y->parent = x->parent;
-				if (!this->_is_null_node(x->parent)) {
+				y->p = x->p;
+				if (!_is_null_node(x->p)) {
 					this->_root = y;
-				} else if (x == x->parent->left) {
-					x->parent->left = y;
+				} else if (x == x->p->left) {
+					x->p->left = y;
 				} else {
-					x->parent->right = y;
+					x->p->right = y;
 				}
 				y->left = x;
-				x->parent = y;
+				x->p = y;
 			}
 			void _right_rotate(node_type* y) {
 				node_type* x = y->left;
 				y->left = x->right;
-				if (!this->_is_null_node(x->left)) {
-					x->right->parent = y;
+				if (!_is_null_node(x->left)) {
+					x->right->p = y;
 				}
-				x->parent = y->parent;
-				if (!this->_is_null_node(y->parent)) {
+				x->p = y->p;
+				if (!_is_null_node(y->p)) {
 					this->_root = x;
-				} else if (y == y->parent->left) {
-					y->parent->left = x;
+				} else if (y == y->p->left) {
+					y->p->left = x;
 				} else {
-					y->parent->right = x;
+					y->p->right = x;
 				}
 				x->right = y;
-				y->parent = x;
+				y->p = x;
 			}
 			bool _is_null_node(node_type* x) {
 				if (x->key == NULL) {

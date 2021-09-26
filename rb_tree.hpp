@@ -149,10 +149,9 @@ namespace ft {
 				return ret;
 			}
 			node_type* _search(node_type* x, const key_type& k) {
-				if (this->_is_null_node(x) || k == x->key)
+				if (this->_is_null_node(x) || k == *(x->key))
 					return x;
-				// TODO fix compare (compare ptr instead value)
-				if (key_compare(k, x->key)) {
+				if (_key_cmp(k, *(x->key))) {
 					return _search(x->left, k);
 				} else {
 					return _search(x->right, k);

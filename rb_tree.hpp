@@ -4,6 +4,10 @@
 #include <functional>
 #include <memory>
 
+//DEBUG
+#include <iostream>
+//DEBUG
+
 namespace ft {
 	template <  class Key,
 			 	class T = Key,
@@ -55,8 +59,11 @@ namespace ft {
 			explicit RBTree(
 					const key_allocator_type& key_alloc = key_allocator_type(),
 					const value_allocator_type& value_alloc =
-						value_allocator_type())
-				: _key_alloc(key_alloc), _value_alloc(value_alloc) {
+						value_allocator_type(),
+					const key_compare& key_cmp = key_compare())
+				: _key_alloc(key_alloc),
+				_value_alloc(value_alloc),
+				_key_cmp(key_cmp) {
 				this->_null_node = new TreeNode;
 				this->_null_node->c = Black;
 				this->_root = this->_null_node;
@@ -76,7 +83,45 @@ namespace ft {
 				return ret_node;
 			}
 
+			void insert(const key_type& k, value_type* data = NULL) {
+				node_type* new_node = _create_node(k, data);
+				_bst_insert_node(new_node);
+				// _insert_fix_up(new_node);
+			}
+			void debug() {
+				this->_debug(this->_root);
+			}
+
 		private:
+			void _debug(node_type *x) {
+				if (!this->_is_null_node(x)) {
+					_debug(x->left);
+					std::cout << *(x->key) << std::endl;
+					_debug(x->right);
+				}
+			}
+			void _bst_insert_node(node_type* z) {
+				node_type* y = _null_node;
+				node_type* x = _root;
+				while (!_is_null_node(x)) {
+					y = x;
+					if (_key_cmp(*(z->key), *(x->key))) {
+						x = x->left;
+					} else {
+						x = x->right;
+					}
+				}
+				x->p = y;
+				if (_is_null_node(y)) {
+					_root = z;
+				} else {
+					if (_key_cmp(*(z->key), *(y->key))) {
+						y->left = z;
+					} else {
+						y->right = z;
+					}
+				}
+			}
 			void _inorder_tree_delete(node_type *x) {
 				if (!this->_is_null_node(x)) {
 					_inorder_tree_delete(x->left);
@@ -93,9 +138,20 @@ namespace ft {
 					_inorder_tree_delete(next);
 				}
 			}
+			node_type* _create_node(const key_type& k, value_type* data) {
+				node_type* ret = new TreeNode;
+				ret->data = data;
+				ret->key = _key_alloc.allocate(1);
+				_key_alloc.construct(ret->key, k);
+				ret->p = _null_node;
+				ret->left = _null_node;
+				ret->right = _null_node;
+				return ret;
+			}
 			node_type* _search(node_type* x, const key_type& k) {
 				if (this->_is_null_node(x) || k == x->key)
 					return x;
+				// TODO fix compare (compare ptr instead value)
 				if (key_compare(k, x->key)) {
 					return _search(x->left, k);
 				} else {
@@ -149,6 +205,7 @@ namespace ft {
 
 			key_allocator_type   _key_alloc;
 			value_allocator_type _value_alloc;
+			key_compare          _key_cmp;
 	};
 }
 

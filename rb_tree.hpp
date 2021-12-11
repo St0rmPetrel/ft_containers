@@ -47,8 +47,7 @@ namespace ft {
 				const key_type& key;
 				value_type*     data;
 
-				explicit FrontNode(const key_type& key,
-						value_type* data = NULL)
+				explicit FrontNode(const key_type& key, value_type* data = NULL)
 					: key(key), data(data), is_exist(false) {}
 				~FrontNode() {}
 				private:
@@ -58,8 +57,7 @@ namespace ft {
 		public:
 			explicit RBTree(
 					const key_allocator_type& key_alloc = key_allocator_type(),
-					const value_allocator_type& value_alloc =
-						value_allocator_type(),
+					const value_allocator_type& value_alloc = value_allocator_type(),
 					const key_compare& key_cmp = key_compare())
 				: _key_alloc(key_alloc),
 				_value_alloc(value_alloc),
@@ -83,11 +81,16 @@ namespace ft {
 				return ret_node;
 			}
 
-			void insert(const key_type& k, value_type* data = NULL) {
+			void insert_node(const key_type& k, value_type* data = NULL) {
 				node_type* new_node = _create_node(k, data);
 				_bst_insert_node(new_node);
 				_insert_fixup(new_node);
 			}
+
+			void delete_node(const key_type& k) {
+				// Stolen part of code :^(
+			}
+
 			//DEBUG
 			void debug() {
 				this->_debug(this->_root);
@@ -126,6 +129,22 @@ namespace ft {
 					}
 				}
 			}
+			void _inorder_tree_delete(node_type *x) {
+				if (!this->_is_null_node(x)) {
+					_inorder_tree_delete(x->left);
+					node_type *next = x->right;
+					//delte key
+					_key_alloc.destroy(x->key);
+					_key_alloc.deallocate(x->key, 1);
+					//delte data
+					if (x->data != NULL) {
+						_value_alloc.destroy(x->data);
+						_value_alloc.deallocate(x->data, 1);
+					}
+					delete x;
+					_inorder_tree_delete(next);
+				}
+			}
 			void _insert_fixup(node_type *z) {
 				node_type* y = _null_node;
 				while (z->p->c == Red) {
@@ -147,7 +166,7 @@ namespace ft {
 							z->p->p->c = Red;
 							_right_rotate(z->p->p);
 						}
-					// Z is son of righ parent (has left uncle)
+					// Z is son of right parent (has left uncle)
 					} else {
 						y = z->p->p->left;
 						// Red uncle (just recolor)
@@ -169,21 +188,65 @@ namespace ft {
 				}
 				_root->c = Black;
 			}
-			void _inorder_tree_delete(node_type *x) {
-				if (!this->_is_null_node(x)) {
-					_inorder_tree_delete(x->left);
-					node_type *next = x->right;
-					//delte key
-					_key_alloc.destroy(x->key);
-					_key_alloc.deallocate(x->key, 1);
-					//delte data
-					if (x->data != NULL) {
-						_value_alloc.destroy(x->data);
-						_value_alloc.deallocate(x->data, 1);
+			// Stolen part of code
+			void _delete_fixup(node_type* x) {
+				node_type* s;
+				while (x != this->_root && x->c == Black) {
+					if (x == x->p->left) {
+						s = x->parent->right;
+						if (s->c == Red) {
+							s->c = Black;
+							x->p->c = Red;
+							_left_rotate(x->parent);
+							s = x->p->right;
+						}
+
+						if (s->left->c == Black && s->right->c == Black) {
+							s->c = Red;
+							x = x->p;
+						} else {
+							if (s->right->c == Black) {
+								s->left->c = Black;
+								s->c = Red;
+								_right_rotate(s);
+								s = x->p->right;
+							}
+
+							s->c = x->p->c;
+							x->p->c = Black;
+							s->right->c = Black;
+							_left_rotate(x->p);
+							x = this->_root;
+						}
+					} else {
+						s = x->p->left;
+						if (s->c == Red) {
+							s->c = Black;
+							x->p->c = Red;
+							_right_rotate(x->p);
+							s = x->p->left;
+						}
+
+						if (s->right->c == Black && s->left->c == Black) {
+							s->c = Red;
+							x = x->p;
+						} else {
+							if (s->left->c == Black) {
+								s->right->c = Black;
+								s->c = Red;
+								_left_rotate(s);
+								s = x->p->left;
+							}
+
+							s->c = x->p->c;
+							x->p->c = Black;
+							s->left->c = Black;
+							_right_rotate(x->p);
+							x = this->_root;
+						}
 					}
-					delete x;
-					_inorder_tree_delete(next);
 				}
+				x->c = Black;
 			}
 			node_type* _create_node(const key_type& k, value_type* data) {
 				node_type* ret = new TreeNode;
@@ -204,6 +267,7 @@ namespace ft {
 					return _search(x->right, k);
 				}
 			}
+
 			void _left_rotate(node_type* x) {
 				node_type* y = x->right;
 				x->right = y->left;
@@ -238,6 +302,17 @@ namespace ft {
 				x->right = y;
 				y->p = x;
 			}
+			void _transplant(node_type* u, node_type* v) {
+				if (_is_null_node(u->p)) {
+					this->_root = v;
+				} else if (u == u->p->left) {
+					u->p->left = v;
+				} else {
+					u->p->right = v;
+				}
+				v->p = u->p;
+			}
+
 			bool _is_null_node(node_type* x) {
 				if (x->key == NULL) {
 					return true;

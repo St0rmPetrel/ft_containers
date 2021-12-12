@@ -19,7 +19,7 @@ namespace ft {
 			typedef Compare      key_compare;
 			typedef AllocatorKey key_allocator_type;
 			typedef AllocatorT   value_allocator_type;
-		private:
+		public:
 			enum Color { Red, Black };
 			typedef struct TreeNode {
 				key_type    *key;
@@ -39,18 +39,37 @@ namespace ft {
 					c(Red) {}
 				~TreeNode() {}
 			} node_type;
-		public:
-			typedef struct FrontNode {
-				bool            is_exist;
-				const key_type& key;
-				value_type*     data;
 
-				explicit FrontNode(const key_type& key, value_type* data = NULL)
-					: key(key), data(data), is_exist(false) {}
-				~FrontNode() {}
+			typedef class Iterator {
+				public:
+					typedef node_type*       pointer;
+				public:
+					Iterator() : _base(NULL) {}
+					Iterator(pointer ptr) : _base(ptr) {}
+					Iterator(const Iterator& src) : _base(src.base()) {}
+
+					Iterator& operator=(const Iterator& src) {
+						if (this != &src) {
+							this->_base = src.base();
+						}
+						return (*this);
+					}
+					~Iterator() {}
+
+					pointer base() const {
+						return this->_base;
+					}
 				private:
-					FrontNode();
-			} front_node_type;
+					pointer _base;
+			} iterator;
+
+		private:
+			node_type*           _root;
+			node_type*           _null_node;
+
+			key_allocator_type   _key_alloc;
+			value_allocator_type _value_alloc;
+			key_compare          _key_cmp;
 
 		public:
 			explicit RBTree(
@@ -67,16 +86,6 @@ namespace ft {
 			~RBTree() {
 				this->_inorder_tree_delete(this->_root);
 				delete this->_null_node;
-			}
-
-			front_node_type search(const key_type& k) {
-				front_node_type ret_node(k);
-				node_type* under_node = _search(this->_root, k);
-				if (!_is_null_node(under_node)) {
-					ret_node.data = under_node->data;
-					ret_node.is_exist = true;
-				}
-				return ret_node;
 			}
 
 			void insert_node(const key_type& k, value_type* data = NULL) {
@@ -125,18 +134,68 @@ namespace ft {
 				_delete_node(z);
 			}
 
-			void debug() {
+			void debug() const {
 				this->_debug(this->_root);
 			}
 
 		private:
-			void _debug(node_type *x) {
-				if (!this->_is_null_node(x)) {
+			void _debug(node_type *x) const {
+				if (!_is_null_node(x)) {
 					_debug(x->left);
 					std::cout << *(x->key) << " ";
 					_debug(x->right);
 				}
 			}
+			void _inorder_tree_delete(node_type *x) {
+				if (!_is_null_node(x)) {
+					_inorder_tree_delete(x->left);
+					node_type *next = x->right;
+					//delte key
+					_key_alloc.destroy(x->key);
+					_key_alloc.deallocate(x->key, 1);
+					//delte data
+					if (x->data != NULL) {
+						_value_alloc.destroy(x->data);
+						_value_alloc.deallocate(x->data, 1);
+					}
+					delete x;
+					_inorder_tree_delete(next);
+				}
+			}
+			node_type* _create_node(const key_type& k, value_type* data) {
+				node_type* ret = new TreeNode;
+				ret->data = data;
+				ret->key = _key_alloc.allocate(1);
+				_key_alloc.construct(ret->key, k);
+				ret->p = NULL;
+				ret->left = _null_node;
+				ret->right = _null_node;
+				ret->c = Red;
+				return ret;
+			}
+			node_type* _minimum(node_type* x) const {
+				while (!_is_null_node(x->left)) {
+					x = x->left;
+				}
+				return x;
+			}
+			node_type* _maximum(node_type* x) const {
+				while (!_is_null_node(x->right)) {
+					x = x->right;
+				}
+				return x;
+			}
+			node_type* _search(node_type* x, const key_type& k) const {
+				if (this->_is_null_node(x) || k == *(x->key))
+					return x;
+				if (_key_cmp(k, *(x->key))) {
+					return _search(x->left, k);
+				} else {
+					return _search(x->right, k);
+				}
+			}
+
+
 			void _delete_node(node_type* z) {
 				node_type *x, *y;
 				Color y_original_color;
@@ -185,22 +244,7 @@ namespace ft {
 					_delete_fixup(x);
 				}
 			}
-			void _inorder_tree_delete(node_type *x) {
-				if (!_is_null_node(x)) {
-					_inorder_tree_delete(x->left);
-					node_type *next = x->right;
-					//delte key
-					_key_alloc.destroy(x->key);
-					_key_alloc.deallocate(x->key, 1);
-					//delte data
-					if (x->data != NULL) {
-						_value_alloc.destroy(x->data);
-						_value_alloc.deallocate(x->data, 1);
-					}
-					delete x;
-					_inorder_tree_delete(next);
-				}
-			}
+
 			void _insert_fixup(node_type *z) {
 				node_type* y;
 
@@ -309,38 +353,6 @@ namespace ft {
 				}
 				x->c = Black;
 			}
-			node_type* _create_node(const key_type& k, value_type* data) {
-				node_type* ret = new TreeNode;
-				ret->data = data;
-				ret->key = _key_alloc.allocate(1);
-				_key_alloc.construct(ret->key, k);
-				ret->p = NULL;
-				ret->left = _null_node;
-				ret->right = _null_node;
-				ret->c = Red;
-				return ret;
-			}
-			node_type* _minimum(node_type* x) {
-				while (!_is_null_node(x->left)) {
-					x = x->left;
-				}
-				return x;
-			}
-			node_type* _maximum(node_type* x) {
-				while (!_is_null_node(x->right)) {
-					x = x->right;
-				}
-				return x;
-			}
-			node_type* _search(node_type* x, const key_type& k) {
-				if (this->_is_null_node(x) || k == *(x->key))
-					return x;
-				if (_key_cmp(k, *(x->key))) {
-					return _search(x->left, k);
-				} else {
-					return _search(x->right, k);
-				}
-			}
 
 			void _left_rotate(node_type* x) {
 				node_type* y = x->right;
@@ -387,7 +399,8 @@ namespace ft {
 				v->p = u->p;
 			}
 
-			bool _is_null_node(node_type* x) {
+			// Убрать эту функцию и заменить на TNULL null node
+			bool _is_null_node(node_type* x) const {
 				if (x == NULL) {
 					return true;
 				}
@@ -396,14 +409,6 @@ namespace ft {
 				}
 				return false;
 			}
-
-		private:
-			node_type*           _root;
-			node_type*           _null_node;
-
-			key_allocator_type   _key_alloc;
-			value_allocator_type _value_alloc;
-			key_compare          _key_cmp;
 	};
 }
 

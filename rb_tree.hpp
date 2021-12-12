@@ -65,7 +65,7 @@ namespace ft {
 
 		private:
 			node_type*           _root;
-			node_type*           _null_node;
+			node_type*           TNULL;
 
 			key_allocator_type   _key_alloc;
 			value_allocator_type _value_alloc;
@@ -79,13 +79,14 @@ namespace ft {
 				: _key_alloc(key_alloc),
 				_value_alloc(value_alloc),
 				_key_cmp(key_cmp) {
-				this->_null_node = new TreeNode;
-				this->_null_node->c = Black;
-				this->_root = this->_null_node;
+				this->TNULL = new TreeNode;
+				this->TNULL->c = Black;
+
+				this->_root = TNULL;
 			}
 			~RBTree() {
 				this->_inorder_tree_delete(this->_root);
-				delete this->_null_node;
+				delete TNULL;
 			}
 
 			void insert_node(const key_type& k, value_type* data = NULL) {
@@ -94,7 +95,7 @@ namespace ft {
 				node_type* y = NULL;
 				node_type* x = this->_root;
 
-				while (!_is_null_node(x)) {
+				while (x != TNULL) {
 					y = x;
 					if (_key_cmp(*(new_node->key), *(x->key))) {
 					//if (*(new_node->key) < *(x->key)) {
@@ -128,7 +129,7 @@ namespace ft {
 
 			void delete_node(const key_type& k) {
 				node_type* z = _search(this->_root, k);
-				if (_is_null_node(z)) {
+				if (z == TNULL) {
 					return;
 				}
 				_delete_node(z);
@@ -140,14 +141,14 @@ namespace ft {
 
 		private:
 			void _debug(node_type *x) const {
-				if (!_is_null_node(x)) {
+				if (x != TNULL) {
 					_debug(x->left);
 					std::cout << *(x->key) << " ";
 					_debug(x->right);
 				}
 			}
 			void _inorder_tree_delete(node_type *x) {
-				if (!_is_null_node(x)) {
+				if (x != TNULL) {
 					_inorder_tree_delete(x->left);
 					node_type *next = x->right;
 					//delte key
@@ -168,25 +169,25 @@ namespace ft {
 				ret->key = _key_alloc.allocate(1);
 				_key_alloc.construct(ret->key, k);
 				ret->p = NULL;
-				ret->left = _null_node;
-				ret->right = _null_node;
+				ret->left = TNULL;
+				ret->right = TNULL;
 				ret->c = Red;
 				return ret;
 			}
 			node_type* _minimum(node_type* x) const {
-				while (!_is_null_node(x->left)) {
+				while (x->left != TNULL) {
 					x = x->left;
 				}
 				return x;
 			}
 			node_type* _maximum(node_type* x) const {
-				while (!_is_null_node(x->right)) {
+				while (x->right != TNULL) {
 					x = x->right;
 				}
 				return x;
 			}
 			node_type* _search(node_type* x, const key_type& k) const {
-				if (this->_is_null_node(x) || k == *(x->key))
+				if (x == TNULL || k == *(x->key))
 					return x;
 				if (_key_cmp(k, *(x->key))) {
 					return _search(x->left, k);
@@ -200,16 +201,12 @@ namespace ft {
 				node_type *x, *y;
 				Color y_original_color;
 
-				if (_is_null_node(z) || z == NULL) {
-					return;
-				}
-
 				y = z;
 				y_original_color = y->c;
-				if (_is_null_node(z->left)) {
+				if (z->left == TNULL) {
 					x = z->right;
 					_transplant(z, z->right);
-				} else if (_is_null_node(z->right)) {
+				} else if (z->right == TNULL) {
 					x = z->left;
 					_transplant(z, z->left);
 				} else {
@@ -357,7 +354,7 @@ namespace ft {
 			void _left_rotate(node_type* x) {
 				node_type* y = x->right;
 				x->right = y->left;
-				if (!_is_null_node(y->left)) {
+				if (y->left != TNULL) {
 					y->left->p = x;
 				}
 				y->p = x->p;
@@ -374,7 +371,7 @@ namespace ft {
 			void _right_rotate(node_type* x) {
 				node_type* y = x->left;
 				x->left = y->right;
-				if (!_is_null_node(y->right)) {
+				if (y->right != TNULL) {
 					y->right->p = x;
 				}
 				y->p = x->p;
@@ -389,7 +386,7 @@ namespace ft {
 				x->p = y;
 			}
 			void _transplant(node_type* u, node_type* v) {
-				if (_is_null_node(u->p)) {
+				if (u->p == NULL) {
 					this->_root = v;
 				} else if (u == u->p->left) {
 					u->p->left = v;
@@ -397,17 +394,6 @@ namespace ft {
 					u->p->right = v;
 				}
 				v->p = u->p;
-			}
-
-			// Убрать эту функцию и заменить на TNULL null node
-			bool _is_null_node(node_type* x) const {
-				if (x == NULL) {
-					return true;
-				}
-				if (x->key == NULL) {
-					return true;
-				}
-				return false;
 			}
 	};
 }

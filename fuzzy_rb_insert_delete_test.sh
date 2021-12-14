@@ -13,13 +13,15 @@ int main() {
 
 	srand (time(NULL));
 
-	for (int i = 0; i < TREE_SIZE_IN_TEST; i++) {
-		tree.insert_node(rand() % TREE_SIZE_IN_TEST - (TREE_SIZE_IN_TEST / 2));
+	for (int j = 0; j < 3; j++) {
+		for (int i = 0; i < TREE_SIZE_IN_TEST; i++) {
+			tree.insert_node(rand() % TREE_SIZE_IN_TEST - (TREE_SIZE_IN_TEST / 2));
+		}
+		for (int i = 0; i < TREE_SIZE_IN_TEST; i++) {
+			tree.delete_node(rand() % TREE_SIZE_IN_TEST - (TREE_SIZE_IN_TEST / 2));
+		}
+		tree.debug();
 	}
-	for (int i = 0; i < TREE_SIZE_IN_TEST; i++) {
-		tree.delete_node(rand() % TREE_SIZE_IN_TEST - (TREE_SIZE_IN_TEST / 2));
-	}
-	tree.debug();
 }
 '
 

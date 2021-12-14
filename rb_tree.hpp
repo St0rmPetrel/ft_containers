@@ -59,6 +59,16 @@ namespace ft {
 					pointer base() const {
 						return this->_base;
 					}
+					// pre-increment
+					Iterator operator++() {
+						//this->base = //next node
+					}
+					// post-increment
+					Iterator operator++(int) {
+						Iterator temp = *this;
+						++(*this);
+						return temp;
+					}
 				private:
 					pointer _base;
 			} iterator;
@@ -126,7 +136,6 @@ namespace ft {
 
 				_insert_fixup(new_node);
 			}
-
 			void delete_node(const key_type& k) {
 				node_type* z = _search(this->_root, k);
 				if (z == TNULL) {
@@ -135,17 +144,38 @@ namespace ft {
 				_delete_node(z);
 			}
 
+			const node_type* minimum() const {
+				return _minimum(this->_root);
+			}
+			const node_type* maximum() const {
+				return _maximum(this->_root);
+			}
+			const node_type* search(const key_type& k) {
+				return _search(this->_root, k);
+			}
+
 			void debug() const {
 				this->_debug(this->_root);
 			}
 
 		private:
 			void _debug(node_type *x) const {
-				if (x != TNULL) {
-					_debug(x->left);
-					std::cout << *(x->key) << " ";
-					_debug(x->right);
+				//if (x != TNULL) {
+				//	_debug(x->left);
+				//	std::cout << *(x->key) << " ";
+				//	_debug(x->right);
+				//}
+				node_type* current = _minimum(x);
+				while (current != TNULL) {
+					std::cout << *(current->key) << " ";
+					current = _successor_iteration(current);
 				}
+				std::cout << std::endl;
+				//current = _maximum(x);
+				//while (current != TNULL) {
+				//	std::cout << *(current->key) << " ";
+				//	current = _predecessor_iteration(current);
+				//}
 			}
 			void _inorder_tree_delete(node_type *x) {
 				if (x != TNULL) {
@@ -194,6 +224,55 @@ namespace ft {
 				} else {
 					return _search(x->right, k);
 				}
+			}
+			// Successor/Predecessor interation allgorithm
+			// _successor_iteration retrun node after prev
+			node_type* _successor_iteration(node_type* prev) const {
+				if (prev == NULL || prev == TNULL) {
+					return NULL;
+				}
+				// The successor of a node is:
+				//   Next-R rule
+				//   If it has a right subtree, the leftmost node in the right subtree.
+				if (prev->right != TNULL) {
+					return _minimum(prev->right);
+				}
+				//   Next-U rule
+				//   Otherwise, traverse up the tree.
+				//    If prev node was a left child then that parent node is the successor.
+				//    If prev node was a right child, continue going up.
+				//    If you can't go up anymore, then there's no successor.
+				while (prev->p != NULL && prev == prev->p->right) {
+					prev = prev->p;
+				}
+				if (prev->p == NULL) {
+					return TNULL;
+				}
+				return prev->p;
+			}
+			// _predecessor_iteration return node before next
+			node_type* _predecessor_iteration(node_type* next) const {
+				if (next == NULL || next == TNULL) {
+					return NULL;
+				}
+				// The predecessor  of a node is:
+				//   Next-L rule
+				//   If it has a right subtree, the rightmost node in the left subtree.
+				if (next->left != TNULL) {
+					return _maximum(next->right);
+				}
+				//   Next-U rule
+				//   Otherwise, traverse up the tree.
+				//    If next node was a right child then that parent node is the predecessor.
+				//    If next node was a left child, continue going up.
+				//    If you can't go up anymore, then there's no predecessor.
+				while (next->p != NULL && next == next->p->left) {
+					next = next->p;
+				}
+				if (next->p == NULL) {
+					return TNULL;
+				}
+				return next->p;
 			}
 
 

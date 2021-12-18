@@ -160,22 +160,20 @@ namespace ft {
 
 		private:
 			void _debug(node_type *x) const {
-				//if (x != TNULL) {
-				//	_debug(x->left);
-				//	std::cout << *(x->key) << " ";
-				//	_debug(x->right);
-				//}
 				node_type* current = _minimum(x);
+				std::cout << "Forward: " << std::endl;
 				while (current != TNULL) {
 					std::cout << *(current->key) << " ";
 					current = _successor_iteration(current);
 				}
 				std::cout << std::endl;
-				//current = _maximum(x);
-				//while (current != TNULL) {
-				//	std::cout << *(current->key) << " ";
-				//	current = _predecessor_iteration(current);
-				//}
+				current = _maximum(x);
+				std::cout << "Backward: " << std::endl;
+				while (current != TNULL) {
+					std::cout << *(current->key) << " ";
+					current = _predecessor_iteration(current);
+				}
+				std::cout << std::endl;
 			}
 			void _inorder_tree_delete(node_type *x) {
 				if (x != TNULL) {
@@ -255,17 +253,9 @@ namespace ft {
 				if (next == NULL || next == TNULL) {
 					return NULL;
 				}
-				// The predecessor  of a node is:
-				//   Next-L rule
-				//   If it has a right subtree, the rightmost node in the left subtree.
 				if (next->left != TNULL) {
-					return _maximum(next->right);
+					return _maximum(next->left);
 				}
-				//   Next-U rule
-				//   Otherwise, traverse up the tree.
-				//    If next node was a right child then that parent node is the predecessor.
-				//    If next node was a left child, continue going up.
-				//    If you can't go up anymore, then there's no predecessor.
 				while (next->p != NULL && next == next->p->left) {
 					next = next->p;
 				}

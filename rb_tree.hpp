@@ -40,39 +40,6 @@ namespace ft {
 				~TreeNode() {}
 			} node_type;
 
-			typedef class Iterator {
-				public:
-					typedef node_type*       pointer;
-				public:
-					Iterator() : _base(NULL) {}
-					Iterator(pointer ptr) : _base(ptr) {}
-					Iterator(const Iterator& src) : _base(src.base()) {}
-
-					Iterator& operator=(const Iterator& src) {
-						if (this != &src) {
-							this->_base = src.base();
-						}
-						return (*this);
-					}
-					~Iterator() {}
-
-					pointer base() const {
-						return this->_base;
-					}
-					// pre-increment
-					Iterator operator++() {
-						//this->base = //next node
-					}
-					// post-increment
-					Iterator operator++(int) {
-						Iterator temp = *this;
-						++(*this);
-						return temp;
-					}
-				private:
-					pointer _base;
-			} iterator;
-
 		private:
 			node_type*           _root;
 			node_type*           TNULL;

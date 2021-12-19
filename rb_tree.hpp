@@ -8,22 +8,17 @@
 
 namespace ft {
 	template <  class Key,
-			 	class T = Key,
 				class Compare = std::less<Key>,
-				class AllocatorKey = std::allocator<Key>,
-				class AllocatorT = std::allocator<T> >
+				class Allocator = std::allocator<Key> >
 	class RBTree {
 		public:
 			typedef Key          key_type;
-			typedef T            value_type;
 			typedef Compare      key_compare;
-			typedef AllocatorKey key_allocator_type;
-			typedef AllocatorT   value_allocator_type;
+			typedef Allocator    allocator_type;
 		public:
 			enum Color { Red, Black };
 			typedef struct TreeNode {
 				key_type    *key;
-				value_type  *data;
 
 				Color       c;
 				TreeNode    *left;
@@ -32,7 +27,6 @@ namespace ft {
 
 				TreeNode()
 					: key(NULL),
-					data(NULL),
 					left(NULL),
 					right(NULL),
 					p(NULL),
@@ -44,17 +38,14 @@ namespace ft {
 			node_type*           _root;
 			node_type*           TNULL;
 
-			key_allocator_type   _key_alloc;
-			value_allocator_type _value_alloc;
-			key_compare          _key_cmp;
+			allocator_type _alloc;
+			key_compare    _key_cmp;
 
 		public:
 			explicit RBTree(
-					const key_allocator_type& key_alloc = key_allocator_type(),
-					const value_allocator_type& value_alloc = value_allocator_type(),
+					const allocator_type& alloc = allocator_type(),
 					const key_compare& key_cmp = key_compare())
-				: _key_alloc(key_alloc),
-				_value_alloc(value_alloc),
+				: _alloc(alloc),
 				_key_cmp(key_cmp) {
 				this->TNULL = new TreeNode;
 				this->TNULL->c = Black;
@@ -66,8 +57,8 @@ namespace ft {
 				delete TNULL;
 			}
 
-			void insert_node(const key_type& k, value_type* data = NULL) {
-				node_type* new_node = _create_node(k, data);
+			void insert_node(const key_type& k) {
+				node_type* new_node = _create_node(k);
 
 				node_type* y = NULL;
 				node_type* x = this->_root;
@@ -117,7 +108,7 @@ namespace ft {
 			const node_type* maximum() const {
 				return _maximum(this->_root);
 			}
-			const node_type* search(const key_type& k) {
+			const node_type* search(const key_type& k) const {
 				return _search(this->_root, k);
 			}
 
@@ -147,22 +138,19 @@ namespace ft {
 					_inorder_tree_delete(x->left);
 					node_type *next = x->right;
 					//delte key
-					_key_alloc.destroy(x->key);
-					_key_alloc.deallocate(x->key, 1);
-					//delte data
-					if (x->data != NULL) {
-						_value_alloc.destroy(x->data);
-						_value_alloc.deallocate(x->data, 1);
-					}
+					_alloc.destroy(x->key);
+					_alloc.deallocate(x->key, 1);
 					delete x;
 					_inorder_tree_delete(next);
 				}
 			}
-			node_type* _create_node(const key_type& k, value_type* data) {
+			node_type* _create_node(const key_type& k) {
 				node_type* ret = new TreeNode;
-				ret->data = data;
-				ret->key = _key_alloc.allocate(1);
-				_key_alloc.construct(ret->key, k);
+
+				// Copy k in *(ret->key)
+				ret->key = _alloc.allocate(1);
+				_alloc.construct(ret->key, k);
+
 				ret->p = NULL;
 				ret->left = TNULL;
 				ret->right = TNULL;
@@ -263,14 +251,10 @@ namespace ft {
 				}
 
 				// Delete node z
-				//delte key
-				_key_alloc.destroy(z->key);
-				_key_alloc.deallocate(z->key, 1);
-				//delte data
-				if (z->data != NULL) {
-					_value_alloc.destroy(z->data);
-					_value_alloc.deallocate(z->data, 1);
-				}
+				// delte key
+				_alloc.destroy(z->key);
+				_alloc.deallocate(z->key, 1);
+				// delete node
 				delete z;
 
 				if (y_original_color == Black) {

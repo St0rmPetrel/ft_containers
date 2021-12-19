@@ -20,7 +20,19 @@ int main() {
 		for (int i = 0; i < TREE_SIZE_IN_TEST; i++) {
 			tree.delete_node(rand() % TREE_SIZE_IN_TEST - (TREE_SIZE_IN_TEST / 2));
 		}
-		tree.debug();
+		// Output
+		ft::RBTree<int>::const_iterator it;
+		for (it = tree.begin(); it != tree.end(); ++it) {
+			std::cout << *it << " ";
+		}
+		std::cout << std::endl;
+		for (it = tree.end(); it != tree.begin(); --it) {
+			if (it != tree.end()) {
+				std::cout << *it << " ";
+			}
+		}
+		std::cout << *it << " ";
+		std::cout << std::endl;
 	}
 }
 '

@@ -1,10 +1,8 @@
 #ifndef RB_TREE_HPP
 #define RB_TREE_HPP
 
-#include <functional>
-#include <memory>
-
-#include <iostream>
+#include <functional> // std::allocator
+#include <memory>     // std::less
 
 namespace ft {
 	template <  class Key,
@@ -49,23 +47,27 @@ namespace ft {
 					node_type* _base;
 					RBTree*    _enclosing;
 				public:
-					const_iterator() : _base(NULL) { }
+					const_iterator() : _base(NULL), _enclosing(NULL) { }
 					const_iterator(RBTree* e, node_type* base) : _enclosing(e), _base(base) { }
-					const_iterator(const const_iterator& src) : _base(src._base) { }
+					const_iterator(const const_iterator& src) :
+						_base(src._base), _enclosing(src._enclosing) { }
 					~const_iterator() { }
 
 					const_iterator& operator= (const const_iterator& src) {
 						if (this != &src) {
 							this->_base = src._base;
+							this->_enclosing = src._enclosing;
 						}
 						return (*this);
 					}
 				public:
 					bool operator==(const const_iterator &other) const {
-						return this->_base == other._base;
+						return (this->_base == other._base) &&
+							(this->_enclosing == other._enclosing);
 					}
 					bool operator!=(const const_iterator &other) const {
-						return this->_base != other._base;
+						return (this->_base != other._base) ||
+							(this->_enclosing != other._enclosing);
 					}
 
 					const key_type& operator*() const {
@@ -166,27 +168,7 @@ namespace ft {
 				return (RBTree::const_iterator(this, _search(this->_root, k)));
 			}
 
-			void debug() const {
-				this->_debug(this->_root);
-			}
-
 		private:
-			void _debug(node_type *x) const {
-				node_type* current = _minimum(x);
-				std::cout << "Forward: " << std::endl;
-				while (current != TNULL) {
-					std::cout << *(current->key) << " ";
-					current = _successor_iteration(current);
-				}
-				std::cout << std::endl;
-				current = _maximum(x);
-				std::cout << "Backward: " << std::endl;
-				while (current != TNULL) {
-					std::cout << *(current->key) << " ";
-					current = _predecessor_iteration(current);
-				}
-				std::cout << std::endl;
-			}
 			void _inorder_tree_delete(node_type *x) {
 				if (x != TNULL) {
 					_inorder_tree_delete(x->left);

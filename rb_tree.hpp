@@ -15,7 +15,7 @@ namespace ft {
 			typedef Key          key_type;
 			typedef Compare      key_compare;
 			typedef Allocator    allocator_type;
-		public:
+		private:
 			enum Color { Red, Black };
 			typedef struct TreeNode {
 				key_type    *key;
@@ -30,7 +30,7 @@ namespace ft {
 					left(NULL),
 					right(NULL),
 					p(NULL),
-					c(Red) {}
+					c(Black) {}
 				~TreeNode() {}
 			} node_type;
 
@@ -38,23 +38,77 @@ namespace ft {
 			node_type*           _root;
 			node_type*           TNULL;
 
+			node_type null_node;
+
 			allocator_type _alloc;
 			key_compare    _key_cmp;
+
+		public:
+			class const_iterator {
+				private:
+					node_type* _base;
+					RBTree*    _enclosing;
+				public:
+					const_iterator() : _base(NULL) { }
+					const_iterator(RBTree* e, node_type* base) : _enclosing(e), _base(base) { }
+					const_iterator(const const_iterator& src) : _base(src._base) { }
+					~const_iterator() { }
+
+					const_iterator& operator= (const const_iterator& src) {
+						if (this != &src) {
+							this->_base = src._base;
+						}
+						return (*this);
+					}
+				public:
+					bool operator==(const const_iterator &other) const {
+						return this->_base == other._base;
+					}
+					bool operator!=(const const_iterator &other) const {
+						return this->_base != other._base;
+					}
+
+					const key_type& operator*() const {
+						return *(this->_base->key);
+					}
+					const key_type* operator->() const {
+						return &(operator*());
+					}
+
+					// Pre-increment
+					const_iterator& operator++() {
+						this->_base = _enclosing->_successor_iteration(this->_base);
+						return (*this);
+					}
+					// Post-increment
+					const_iterator operator++(int) {
+						const_iterator temp = *this;
+						++(*this);
+						return temp;
+					}
+					// Pre-decrement
+					const_iterator& operator--() {
+						this->_base = _enclosing->_predecessor_iteration(this->_base);
+						return (*this);
+					}
+					// Post-decrement
+					const_iterator operator--(int) {
+						const_iterator temp = *this;
+						--(*this);
+						return temp;
+					}
+			};
 
 		public:
 			explicit RBTree(
 					const allocator_type& alloc = allocator_type(),
 					const key_compare& key_cmp = key_compare())
-				: _alloc(alloc),
-				_key_cmp(key_cmp) {
-				this->TNULL = new TreeNode;
-				this->TNULL->c = Black;
-
+				: _alloc(alloc), _key_cmp(key_cmp) {
+				this->TNULL = &null_node;
 				this->_root = TNULL;
 			}
 			~RBTree() {
 				this->_inorder_tree_delete(this->_root);
-				delete TNULL;
 			}
 
 			void insert_node(const key_type& k) {
@@ -102,14 +156,14 @@ namespace ft {
 				_delete_node(z);
 			}
 
-			const node_type* minimum() const {
-				return _minimum(this->_root);
+			const_iterator begin() {
+				return (RBTree::const_iterator(this, _minimum(this->_root)));
 			}
-			const node_type* maximum() const {
-				return _maximum(this->_root);
+			const_iterator end() {
+				return (RBTree::const_iterator(this, TNULL));
 			}
-			const node_type* search(const key_type& k) const {
-				return _search(this->_root, k);
+			const_iterator find(const key_type& k) {
+				return (RBTree::const_iterator(this, _search(this->_root, k)));
 			}
 
 			void debug() const {
@@ -158,20 +212,23 @@ namespace ft {
 				return ret;
 			}
 			node_type* _minimum(node_type* x) const {
-				while (x->left != TNULL) {
+				while (x != TNULL && x->left != TNULL) {
 					x = x->left;
 				}
 				return x;
 			}
 			node_type* _maximum(node_type* x) const {
-				while (x->right != TNULL) {
+				while (x != TNULL && x->right != TNULL) {
 					x = x->right;
 				}
 				return x;
 			}
 			node_type* _search(node_type* x, const key_type& k) const {
-				if (x == TNULL || k == *(x->key))
+				if (x == TNULL ||
+						//k == *(x->key)
+						(!_key_cmp(k, *(x->key)) && !_key_cmp(*(x->key), k)) ) {
 					return x;
+				}
 				if (_key_cmp(k, *(x->key))) {
 					return _search(x->left, k);
 				} else {
@@ -181,8 +238,8 @@ namespace ft {
 			// Successor/Predecessor interation allgorithm
 			// _successor_iteration retrun node after prev
 			node_type* _successor_iteration(node_type* prev) const {
-				if (prev == NULL || prev == TNULL) {
-					return NULL;
+				if (prev == TNULL) {
+					return _minimum(this->_root);
 				}
 				// The successor of a node is:
 				//   Next-R rule
@@ -205,8 +262,8 @@ namespace ft {
 			}
 			// _predecessor_iteration return node before next
 			node_type* _predecessor_iteration(node_type* next) const {
-				if (next == NULL || next == TNULL) {
-					return NULL;
+				if (next == TNULL) {
+					return _maximum(this->_root);
 				}
 				if (next->left != TNULL) {
 					return _maximum(next->left);

@@ -9,13 +9,15 @@ namespace ft {
 	
 		first_type  first;
 		second_type second;
-	
+
 		// Constructor
 		// default
 		pair() { }
 		// copy
 		template<class U, class V>
-		pair (const pair<U,V>& pr) : first(pr.first), second(pr.second) { }
+		pair (const pair<U,V>& pr) :
+			first(first_type(pr.first)),
+			second(pr.second) { }
 		// initialization
 		pair (const first_type& a, const second_type& b) : first(a), second(b) { }
 		// Destructor
@@ -27,7 +29,12 @@ namespace ft {
 			return (*this);
 		}
 	};
-	
+
+	template <class T1,class T2>
+	pair<T1,T2> make_pair (T1 x, T2 y) {
+		return ( pair<T1,T2>(x,y) );
+	}
+
 	// Relational operators
 	template <class T1, class T2>
 	bool operator== (const pair<T1,T2>& lhs, const pair<T1,T2>& rhs) {

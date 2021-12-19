@@ -60,6 +60,8 @@ namespace ft {
 				return false;
 			}
 			// Modifiers
+			//pair<iterator,bool> insert (const value_type& val) {
+			}
 			// For make insert, need to do pair and iterator - cool
 	};
 }; /* namespace ft */

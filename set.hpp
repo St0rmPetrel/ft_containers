@@ -25,27 +25,21 @@ namespace ft {
 			typedef typename allocator_type::const_pointer   const_pointer;
 			typedef ptrdiff_t                                difference_type;
 			typedef size_t                                   size_type;
+		private:
+			typedef RBTree<key_type, key_compare, allocator_type> underlying_tree_type;
 		public:
 			// Прекол в том что const_iterator и iterator по факту тоже самое
 			// поэтому iterator можно за typedef от const_iterator
 			//
 			// В STL итератор реалезован внутри красно черного дерева
 			// и есть только const итератор
-			class iterator : public std::iterator<std::bidirectional_iterator_tag, value_type> {
-				public:
-					typedef typename RBTree<key_type, key_compare, allocator_type>::node_type*
-						pointer;
-				private:
-					pointer _base;
-				public:
-					iterator() : _base(NULL) { }
-					~iterator() { }
-				public:
+			typedef typename underlying_tree_type::const_iterator iterator;
+			typedef typename underlying_tree_type::const_iterator const_iterator;
 
-			};
+			//};
 		private:
-			RBTree<key_type, key_compare, allocator_type> _base;
-			size_type                                     _size;
+			underlying_tree_type _base;
+			size_type            _size;
 
 			key_compare    _comp;
 			allocator_type _alloc;
@@ -81,10 +75,14 @@ namespace ft {
 			}
 			// Modifiers
 			pair<iterator,bool> insert (const value_type& val) {
-				// For make insert, need to do pair and iterator - cool
-				pair<iterator,bool> ret(iterator(), true);
+				pair<iterator,bool> ret;
+				iterator            it;
 
-				return ret;
+				it = this->_base.find(val);
+				if (it != this->_base.end()) {
+					return make_pair(it, false);
+				}
+				return make_pair(this->_base.insert_node(val), true);
 			}
 	};
 }; /* namespace ft */

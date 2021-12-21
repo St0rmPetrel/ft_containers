@@ -113,8 +113,9 @@ namespace ft {
 				this->_inorder_tree_delete(this->_root);
 			}
 
-			void insert_node(const key_type& k) {
+			const_iterator insert_node(const key_type& k) {
 				node_type* new_node = _create_node(k);
+				const_iterator ret = const_iterator(this, new_node);
 
 				node_type* y = NULL;
 				node_type* x = this->_root;
@@ -141,14 +142,15 @@ namespace ft {
 
 				if (new_node->p == NULL) {
 					new_node->c = Black;
-					return;
+					return ret;
 				}
 
 				if (new_node->p->p == NULL) {
-					return;
+					return ret;
 				}
 
 				_insert_fixup(new_node);
+				return ret;
 			}
 			void delete_node(const key_type& k) {
 				node_type* z = _search(this->_root, k);

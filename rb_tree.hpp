@@ -44,11 +44,12 @@ namespace ft {
 		public:
 			class const_iterator {
 				private:
-					node_type* _base;
-					RBTree*    _enclosing;
+					node_type*    _base;
+					const RBTree* _enclosing;
 				public:
 					const_iterator() : _base(NULL), _enclosing(NULL) { }
-					const_iterator(RBTree* e, node_type* base) : _enclosing(e), _base(base) { }
+					const_iterator(const RBTree* e, node_type* base) :
+						_enclosing(e), _base(base) { }
 					const_iterator(const const_iterator& src) :
 						_base(src._base), _enclosing(src._enclosing) { }
 					~const_iterator() { }
@@ -160,13 +161,13 @@ namespace ft {
 				_delete_node(z);
 			}
 
-			const_iterator begin() {
+			const_iterator begin() const {
 				return (RBTree::const_iterator(this, _minimum(this->_root)));
 			}
-			const_iterator end() {
+			const_iterator end() const {
 				return (RBTree::const_iterator(this, TNULL));
 			}
-			const_iterator find(const key_type& k) {
+			const_iterator find(const key_type& k) const {
 				return (RBTree::const_iterator(this, _search(this->_root, k)));
 			}
 

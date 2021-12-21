@@ -63,6 +63,13 @@ namespace ft {
 			// Destructor
 			~set() {}
 		public:
+			// iterators
+			iterator begin() const {
+				return (this->_base).begin();
+			}
+			iterator end() const {
+				return (this->_base).end();
+			}
 			// Capacity
 			size_type size() const {
 				return (this->_size);
@@ -74,6 +81,8 @@ namespace ft {
 				return false;
 			}
 			// Modifiers
+			// Insert
+			// single element
 			pair<iterator,bool> insert (const value_type& val) {
 				pair<iterator,bool> ret;
 				iterator            it;
@@ -82,8 +91,22 @@ namespace ft {
 				if (it != this->_base.end()) {
 					return make_pair(it, false);
 				}
-				return make_pair(this->_base.insert_node(val), true);
+				ret = make_pair(this->_base.insert_node(val), true);
+				++(this->_size);
+				return ret;
 			}
+			// with hint, just a Gab
+			iterator insert (iterator position, const value_type& val) {
+				return (this->insert(val)).first;
+			}
+			// range
+			template <class InputIterator>
+			void insert (InputIterator first, InputIterator last) {
+				for (InputIterator it = first; it != last; ++it) {
+					this->insert(*it);
+				}
+			}
+
 	};
 }; /* namespace ft */
 

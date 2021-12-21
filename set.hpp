@@ -106,7 +106,27 @@ namespace ft {
 					this->insert(*it);
 				}
 			}
+			// Erase
+			size_type erase (const value_type& val) {
+				if (_base.find(val) == _base.end()) {
+					return 0;
+				}
+				_base.delete_node(val);
+				return 1;
+			}
+			void erase (iterator position) {
+				this->erase(*position);
+			}
+			void erase (iterator first, iterator last) {
+				for (iterator it = first; it != last;) {
+					this->erase(it++);
+				}
+			}
 
+			// Operation
+			iterator find (const value_type& val) const {
+				return this->_base.find(val);
+			}
 	};
 }; /* namespace ft */
 

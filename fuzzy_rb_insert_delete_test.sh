@@ -39,7 +39,7 @@ int main() {
 
 compile () {
 	echo "$SRC_TEST_CODE" |
-	clang++ -o rb_fuzzy_test -D TREE_SIZE_IN_TEST=$TREE_SIZE_IN_TEST -x c++ -
+	clang++ -Wall -Wextra -Werror -o rb_fuzzy_test -D TREE_SIZE_IN_TEST=$TREE_SIZE_IN_TEST -x c++ -
 }
 
 test_fail () {

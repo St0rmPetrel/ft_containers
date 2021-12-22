@@ -4,6 +4,8 @@
 #include <functional> // std::allocator
 #include <memory>     // std::less
 
+#include "reverse_iterator.hpp" // ft::reverse_iterator_adapter
+
 namespace ft {
 	template <  class Key,
 				class Compare = std::less<Key>,
@@ -25,10 +27,10 @@ namespace ft {
 
 				TreeNode()
 					: key(NULL),
+					c(Black),
 					left(NULL),
 					right(NULL),
-					p(NULL),
-					c(Black) {}
+					p(NULL) {}
 				~TreeNode() {}
 			} node_type;
 
@@ -43,13 +45,19 @@ namespace ft {
 
 		public:
 			class const_iterator {
+				public:
+					typedef key_type                        value_type;
+					typedef ptrdiff_t                       difference_type;
+					typedef const key_type*                 pointer;
+					typedef const key_type&                 reference;
+					typedef std::bidirectional_iterator_tag iterator_category;
 				private:
 					node_type*    _base;
 					const RBTree* _enclosing;
 				public:
 					const_iterator() : _base(NULL), _enclosing(NULL) { }
 					const_iterator(const RBTree* e, node_type* base) :
-						_enclosing(e), _base(base) { }
+						_base(base), _enclosing(e) { }
 					const_iterator(const const_iterator& src) :
 						_base(src._base), _enclosing(src._enclosing) { }
 					~const_iterator() { }
@@ -71,10 +79,10 @@ namespace ft {
 							(this->_enclosing != other._enclosing);
 					}
 
-					const key_type& operator*() const {
+					reference operator*() const {
 						return *(this->_base->key);
 					}
-					const key_type* operator->() const {
+					pointer operator->() const {
 						return &(operator*());
 					}
 
@@ -101,6 +109,8 @@ namespace ft {
 						return temp;
 					}
 			};
+
+			typedef reverse_iterator_adapter<const_iterator> const_reverse_iterator;
 
 		public:
 			explicit RBTree(
@@ -166,6 +176,15 @@ namespace ft {
 			}
 			const_iterator end() const {
 				return (RBTree::const_iterator(this, TNULL));
+			}
+
+			const_reverse_iterator rbegin() const {
+				return (RBTree::const_reverse_iterator(
+							RBTree::const_iterator(this, _maximum(this->_root))));
+			}
+			const_reverse_iterator rend() const {
+				return (RBTree::const_reverse_iterator(
+							RBTree::const_iterator(this, TNULL)));
 			}
 			const_iterator find(const key_type& k) const {
 				return (RBTree::const_iterator(this, _search(this->_root, k)));

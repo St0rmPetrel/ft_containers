@@ -4,9 +4,11 @@
 #include <functional>
 #include <memory>
 #include <iterator>
+#include <limits>
 
 #include "rb_tree.hpp"
 #include "pair.hpp"
+#include "utils.hpp"
 
 namespace ft {
 	template <  class T,                          // set::key_type/value_type
@@ -33,8 +35,10 @@ namespace ft {
 			//
 			// В STL итератор реалезован внутри красно черного дерева
 			// и есть только const итератор
-			typedef typename underlying_tree_type::const_iterator iterator;
-			typedef typename underlying_tree_type::const_iterator const_iterator;
+			typedef typename underlying_tree_type::const_iterator         iterator;
+			typedef typename underlying_tree_type::const_iterator         const_iterator;
+			typedef typename underlying_tree_type::const_reverse_iterator reverse_iterator;
+			typedef typename underlying_tree_type::const_reverse_iterator const_reverse_iterator;
 
 			//};
 		private:
@@ -52,10 +56,14 @@ namespace ft {
 			}
 			// range
 			template < class InputIterator >
-			set (InputIterator first, InputIterator last,
+			set (InputIterator first,
+					typename ft::enable_if<
+					!std::numeric_limits<InputIterator>::is_integer,
+					InputIterator >::type last,
 					const key_compare& comp = key_compare(),
-					const allocator_type& alloc = allocator_type()) {
-				// Make it after iterators will have done
+					const allocator_type& alloc = allocator_type())
+				: _comp(comp), _alloc(alloc), _size(0) {
+				this->insert(first, last);
 			}
 			// copy
 			set (const set& x) {
@@ -69,6 +77,12 @@ namespace ft {
 			}
 			iterator end() const {
 				return (this->_base).end();
+			}
+			reverse_iterator rbegin() const {
+				return (this->_base).rbegin();
+			}
+			reverse_iterator rend() const {
+				return (this->_base).rend();
 			}
 			// Capacity
 			size_type size() const {
@@ -101,7 +115,10 @@ namespace ft {
 			}
 			// range
 			template <class InputIterator>
-			void insert (InputIterator first, InputIterator last) {
+			void insert (InputIterator first,
+					typename ft::enable_if<
+					!std::numeric_limits<InputIterator>::is_integer,
+					InputIterator >::type last) {
 				for (InputIterator it = first; it != last; ++it) {
 					this->insert(*it);
 				}

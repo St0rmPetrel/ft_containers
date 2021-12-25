@@ -30,17 +30,11 @@ namespace ft {
 		private:
 			typedef RBTree<key_type, key_compare, allocator_type> underlying_tree_type;
 		public:
-			// Прекол в том что const_iterator и iterator по факту тоже самое
-			// поэтому iterator можно за typedef от const_iterator
-			//
-			// В STL итератор реалезован внутри красно черного дерева
-			// и есть только const итератор
 			typedef typename underlying_tree_type::const_iterator         iterator;
 			typedef typename underlying_tree_type::const_iterator         const_iterator;
 			typedef typename underlying_tree_type::const_reverse_iterator reverse_iterator;
 			typedef typename underlying_tree_type::const_reverse_iterator const_reverse_iterator;
 
-			//};
 		private:
 			underlying_tree_type _base;
 			size_type            _size;
@@ -49,7 +43,7 @@ namespace ft {
 			allocator_type _alloc;
 		public:
 			// Constuctors
-			// empty
+			// empty (default)
 			explicit set (const key_compare& comp = key_compare(),
 					const allocator_type& alloc = allocator_type())
 				: _comp(comp), _alloc(alloc), _size(0) {
@@ -67,9 +61,16 @@ namespace ft {
 			}
 			// copy
 			set (const set& x) {
+				this->insert(x.begin(), x.end());
 			}
 			// Destructor
 			~set() {}
+
+			set& operator= (const set& x) {
+				this->clear();
+				this->insert(x.begin(), x.end());
+				return (*this);
+			}
 		public:
 			// iterators
 			iterator begin() const {
@@ -133,11 +134,20 @@ namespace ft {
 			}
 			void erase (iterator position) {
 				this->erase(*position);
+				--(this->_size);
 			}
 			void erase (iterator first, iterator last) {
 				for (iterator it = first; it != last;) {
 					this->erase(it++);
 				}
+			}
+			// Варварсво конечно так делать
+			void swap (set& x) {
+				// Лучше в самом дереве сделать метода swap
+			}
+			//
+			void clear () {
+				erase(this->begin(), this->end());
 			}
 
 			// Operation

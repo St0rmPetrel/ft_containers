@@ -196,6 +196,13 @@ namespace ft {
 			const_iterator find(const key_type& k) const {
 				return (RBTree::const_iterator(this, _search(this->_root, k)));
 			}
+			// очень плохо, но пусть так
+			const_iterator lower_bound (const key_type& k) const {
+				return (RBTree::const_iterator(this, _lower_bound(_maximum(this->_root), k)));
+			}
+			const_iterator upper_bound (const key_type& k) const {
+				return (RBTree::const_iterator(this, _upper_bound(_minimum(this->_root), k)));
+			}
 
 		private:
 			void _inorder_tree_delete(node_type *x) {
@@ -245,6 +252,22 @@ namespace ft {
 				} else {
 					return _search(x->right, k);
 				}
+			}
+			node_type* _lower_bound(node_type* x, const key_type& k) const {
+				if (x == TNULL ||
+						// *(x->key) <= k
+						!_key_cmp(k, *(x->key)) ) {
+					return x;
+				}
+				return _lower_bound(_predecessor_iteration(x), k);
+			}
+			node_type* _upper_bound(node_type* x, const key_type& k) const {
+				if (x == TNULL ||
+						// *(x->key) > k
+						_key_cmp(k, *(x->key)) ) {
+					return x;
+				}
+				return _upper_bound(_successor_iteration(x), k);
 			}
 			// Successor/Predecessor interation allgorithm
 			// _successor_iteration retrun node after prev

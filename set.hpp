@@ -95,6 +95,9 @@ namespace ft {
 				}
 				return false;
 			}
+			size_type max_size() const {
+				return (this->_alloc.max_size());
+			}
 			// Modifiers
 			// Insert
 			// single element
@@ -151,9 +154,37 @@ namespace ft {
 				erase(this->begin(), this->end());
 			}
 
+			// Observers
+			key_compare key_comp() const {
+				return this->_comp;
+			}
+			value_compare value_comp() const {
+				return this->_comp;
+			}
+
 			// Operation
 			iterator find (const value_type& val) const {
 				return this->_base.find(val);
+			}
+			size_type count (const value_type& val) const {
+				if (this->_base.find(val) != this->end()) {
+					return 1;
+				}
+				return 0;
+			}
+			iterator lower_bound (const value_type& val) const {
+				return this->_base.lower_bound(val);
+			}
+			iterator upper_bound (const value_type& val) const {
+				return this->_base.upper_bound(val);
+			}
+			pair<iterator,iterator> equal_range (const value_type& val) const {
+				return make_pair(_base.lower_bound(val), _base.upper_bound(val));
+			}
+
+			// Allacator
+			allocator_type get_allocator() const {
+				return this->_alloc;
 			}
 	};
 }; /* namespace ft */

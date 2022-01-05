@@ -170,6 +170,13 @@ namespace ft {
 				}
 				_delete_node(z);
 			}
+			void  swap(RBTree& x) {
+				std::swap(this->_alloc, x._alloc);
+				std::swap(this->_key_cmp, x._key_cmp);
+				std::swap(this->null_node, x.null_node);
+				std::swap(this->TNULL, x.TNULL);
+				std::swap(this->_root, x._root);
+			}
 
 			const_iterator begin() const {
 				return (RBTree::const_iterator(this, _minimum(this->_root)));

@@ -141,11 +141,12 @@ namespace ft {
 					this->erase(it++);
 				}
 			}
-			// Варварсво конечно так делать
 			void swap (set& x) {
-				// Лучше в самом дереве сделать метода swap
+				(this->_base).swap(x._base);
+				std::swap(this->_size, x._size);
+				std::swap(this->_comp, x._comp);
+				std::swap(this->_alloc, x._alloc);
 			}
-			//
 			void clear () {
 				erase(this->begin(), this->end());
 			}

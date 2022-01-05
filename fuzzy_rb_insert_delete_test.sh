@@ -43,9 +43,27 @@ compile () {
 }
 
 test_fail () {
+	rm rb_fuzzy_test
 	echo Test Fail 🔥
 	exit 1
 }
+
+no_program () {
+	echo Missing necessery program 🔗: $1
+	exit 1
+}
+
+test_dependencies () {
+	for program in "$@"
+	do
+		if ! which -s $program
+		then
+			no_program $program
+		fi
+	done
+}
+
+test_dependencies clang++ valgrind
 
 if ! compile
 then

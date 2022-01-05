@@ -64,7 +64,7 @@ namespace ft {
 				this->insert(x.begin(), x.end());
 			}
 			// Destructor
-			~set() {}
+			~set() { }
 
 			set& operator= (const set& x) {
 				this->clear();

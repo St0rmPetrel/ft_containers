@@ -36,26 +36,40 @@ namespace ft {
 			typedef typename allocator_type::const_reference const_reference;
 			typedef typename allocator_type::pointer         pointer;
 			typedef typename allocator_type::const_pointer   const_pointer;
-		public:
-			class iterator {
-				// Need to test how it actualy work
-			}; /* iterator */
-			class const_iterator {
-				// Need to test how it actualy work
-			}; /* const_iterator */
-		public:
-			typedef reverse_iterator_adapter<iterator>       reverse_iterator;
-			typedef reverse_iterator_adapter<const_iterator> const_reverse_iterator;
 			typedef ptrdiff_t                                difference_type;
 			typedef size_t                                   size_type;
 		private:
 			typedef RBTree<value_type, value_compare, allocator_type> underlying_tree_type;
+		public:
+			typedef typename underlying_tree_type::iterator               iterator;
+			typedef typename underlying_tree_type::const_iterator         const_iterator;
+			typedef typename underlying_tree_type::const_reverse_iterator reverse_iterator;
+			typedef typename underlying_tree_type::reverse_iterator       const_reverse_iterator;
 		private:
 			underlying_tree_type _base;
+			size_type            _size;
+
+			key_compare    _comp;
+			allocator_type _alloc;
 		public:
 			// Constuctors
+			// empty
+			explicit map (const key_compare& comp = key_compare(),
+					const allocator_type& alloc = allocator_type()) {
+			}
+			// range
+			template <class InputIterator>
+			map (InputIterator first, InputIterator last,
+					const key_compare& comp = key_compare(),
+					const allocator_type& alloc = allocator_type()) {
+			}
+			// copy
+			map (const map& x) {
+			}
 
 			// Destructor
+			~map() { }
+
 	}; /* class map */
 }; /*namespace ft */
 

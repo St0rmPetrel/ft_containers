@@ -46,7 +46,9 @@ namespace ft {
 			// empty (default)
 			explicit set (const key_compare& comp = key_compare(),
 					const allocator_type& alloc = allocator_type())
-				: _comp(comp), _alloc(alloc), _size(0) {
+				// change it
+				: _comp(comp), _alloc(alloc), _size(0),
+					_base(alloc, comp) {
 			}
 			// range
 			template < class InputIterator >
@@ -56,13 +58,16 @@ namespace ft {
 					InputIterator >::type last,
 					const key_compare& comp = key_compare(),
 					const allocator_type& alloc = allocator_type())
-				: _comp(comp), _alloc(alloc), _size(0) {
+				// change it
+				: _comp(comp), _alloc(alloc), _size(0),
+					_base(alloc, comp) {
 				this->insert(first, last);
 			}
 			// copy
 			set (const set& x) {
 				this->insert(x.begin(), x.end());
 			}
+
 			// Destructor
 			~set() { }
 

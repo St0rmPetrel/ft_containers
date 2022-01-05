@@ -46,7 +46,7 @@ namespace ft {
 		public:
 			class const_iterator {
 				public:
-					typedef key_type                        value_type;
+					typedef const key_type                  value_type;
 					typedef ptrdiff_t                       difference_type;
 					typedef const key_type*                 pointer;
 					typedef const key_type&                 reference;
@@ -109,8 +109,77 @@ namespace ft {
 						return temp;
 					}
 			};
+			// WARN
+			// Dangerous, may destroy tree if change key by bad way
+			// I add this class for map, for changing second pair value
+			class iterator {
+				public:
+					typedef key_type                        value_type;
+					typedef ptrdiff_t                       difference_type;
+					typedef key_type*                       pointer;
+					typedef key_type&                       reference;
+					typedef std::bidirectional_iterator_tag iterator_category;
+				private:
+					node_type*    _base;
+					const RBTree* _enclosing;
+				public:
+					iterator() : _base(NULL), _enclosing(NULL) { }
+					iterator(const RBTree* e, node_type* base) :
+						_base(base), _enclosing(e) { }
+					iterator(const iterator& src) :
+						_base(src._base), _enclosing(src._enclosing) { }
+					~iterator() { }
+
+					iterator& operator= (const iterator& src) {
+						if (this != &src) {
+							this->_base = src._base;
+							this->_enclosing = src._enclosing;
+						}
+						return (*this);
+					}
+				public:
+					bool operator==(const iterator &other) const {
+						return (this->_base == other._base) &&
+							(this->_enclosing == other._enclosing);
+					}
+					bool operator!=(const iterator &other) const {
+						return (this->_base != other._base) ||
+							(this->_enclosing != other._enclosing);
+					}
+
+					reference operator*() const {
+						return *(this->_base->key);
+					}
+					pointer operator->() const {
+						return &(operator*());
+					}
+
+					// Pre-increment
+					iterator& operator++() {
+						this->_base = _enclosing->_successor_iteration(this->_base);
+						return (*this);
+					}
+					// Post-increment
+					iterator operator++(int) {
+						iterator temp = *this;
+						++(*this);
+						return temp;
+					}
+					// Pre-decrement
+					iterator& operator--() {
+						this->_base = _enclosing->_predecessor_iteration(this->_base);
+						return (*this);
+					}
+					// Post-decrement
+					iterator operator--(int) {
+						iterator temp = *this;
+						--(*this);
+						return temp;
+					}
+			};
 
 			typedef reverse_iterator_adapter<const_iterator> const_reverse_iterator;
+			typedef reverse_iterator_adapter<iterator>       reverse_iterator;
 
 		public:
 			explicit RBTree(

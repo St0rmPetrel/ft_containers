@@ -44,71 +44,7 @@ namespace ft {
 			key_compare    _key_cmp;
 
 		public:
-			class const_iterator {
-				public:
-					typedef const key_type                  value_type;
-					typedef ptrdiff_t                       difference_type;
-					typedef const key_type*                 pointer;
-					typedef const key_type&                 reference;
-					typedef std::bidirectional_iterator_tag iterator_category;
-				private:
-					node_type*    _base;
-					const RBTree* _enclosing;
-				public:
-					const_iterator() : _base(NULL), _enclosing(NULL) { }
-					const_iterator(const RBTree* e, node_type* base) :
-						_base(base), _enclosing(e) { }
-					const_iterator(const const_iterator& src) :
-						_base(src._base), _enclosing(src._enclosing) { }
-					~const_iterator() { }
-
-					const_iterator& operator= (const const_iterator& src) {
-						if (this != &src) {
-							this->_base = src._base;
-							this->_enclosing = src._enclosing;
-						}
-						return (*this);
-					}
-				public:
-					bool operator==(const const_iterator &other) const {
-						return (this->_base == other._base) &&
-							(this->_enclosing == other._enclosing);
-					}
-					bool operator!=(const const_iterator &other) const {
-						return (this->_base != other._base) ||
-							(this->_enclosing != other._enclosing);
-					}
-
-					reference operator*() const {
-						return *(this->_base->key);
-					}
-					pointer operator->() const {
-						return &(operator*());
-					}
-
-					// Pre-increment
-					const_iterator& operator++() {
-						this->_base = _enclosing->_successor_iteration(this->_base);
-						return (*this);
-					}
-					// Post-increment
-					const_iterator operator++(int) {
-						const_iterator temp = *this;
-						++(*this);
-						return temp;
-					}
-					// Pre-decrement
-					const_iterator& operator--() {
-						this->_base = _enclosing->_predecessor_iteration(this->_base);
-						return (*this);
-					}
-					// Post-decrement
-					const_iterator operator--(int) {
-						const_iterator temp = *this;
-						--(*this);
-						return temp;
-					}
-			};
+			class const_iterator;
 			// WARN
 			// Dangerous, may destroy tree if change key by bad way
 			// I add this class for map, for changing second pair value
@@ -122,6 +58,8 @@ namespace ft {
 				private:
 					node_type*    _base;
 					const RBTree* _enclosing;
+
+					friend class RBTree::const_iterator;
 				public:
 					iterator() : _base(NULL), _enclosing(NULL) { }
 					iterator(const RBTree* e, node_type* base) :
@@ -176,7 +114,80 @@ namespace ft {
 						--(*this);
 						return temp;
 					}
-			};
+			}; /* iterator */
+			class const_iterator {
+				public:
+					typedef const key_type                  value_type;
+					typedef ptrdiff_t                       difference_type;
+					typedef const key_type*                 pointer;
+					typedef const key_type&                 reference;
+					typedef std::bidirectional_iterator_tag iterator_category;
+				private:
+					node_type*    _base;
+					const RBTree* _enclosing;
+				public:
+					const_iterator() : _base(NULL), _enclosing(NULL) { }
+					const_iterator(const RBTree* e, node_type* base) :
+						_base(base), _enclosing(e) { }
+					const_iterator(const const_iterator& src) :
+						_base(src._base), _enclosing(src._enclosing) { }
+					const_iterator(const iterator& src) :
+						_base(src._base), _enclosing(src._enclosing) { }
+
+					~const_iterator() { }
+
+					const_iterator& operator= (const const_iterator& src) {
+						if (this != &src) {
+							this->_base = src._base;
+							this->_enclosing = src._enclosing;
+						}
+						return (*this);
+					}
+					const_iterator& operator= (const iterator& src) {
+						this->_base = src._base;
+						this->_enclosing = src._enclosing;
+						return (*this);
+					}
+				public:
+					bool operator==(const const_iterator &other) const {
+						return (this->_base == other._base) &&
+							(this->_enclosing == other._enclosing);
+					}
+					bool operator!=(const const_iterator &other) const {
+						return (this->_base != other._base) ||
+							(this->_enclosing != other._enclosing);
+					}
+
+					reference operator*() const {
+						return *(this->_base->key);
+					}
+					pointer operator->() const {
+						return &(operator*());
+					}
+
+					// Pre-increment
+					const_iterator& operator++() {
+						this->_base = _enclosing->_successor_iteration(this->_base);
+						return (*this);
+					}
+					// Post-increment
+					const_iterator operator++(int) {
+						const_iterator temp = *this;
+						++(*this);
+						return temp;
+					}
+					// Pre-decrement
+					const_iterator& operator--() {
+						this->_base = _enclosing->_predecessor_iteration(this->_base);
+						return (*this);
+					}
+					// Post-decrement
+					const_iterator operator--(int) {
+						const_iterator temp = *this;
+						--(*this);
+						return temp;
+					}
+			}; /* const_iterator */
 
 			typedef reverse_iterator_adapter<const_iterator> const_reverse_iterator;
 			typedef reverse_iterator_adapter<iterator>       reverse_iterator;
@@ -247,30 +258,33 @@ namespace ft {
 				std::swap(this->_root, x._root);
 			}
 
-			const_iterator begin() const {
-				return (RBTree::const_iterator(this, _minimum(this->_root)));
-			}
-			const_iterator end() const {
-				return (RBTree::const_iterator(this, TNULL));
+			iterator begin() const {
+				return (RBTree::iterator(this, _minimum(this->_root)));
 			}
 
-			const_reverse_iterator rbegin() const {
-				return (RBTree::const_reverse_iterator(
-							RBTree::const_iterator(this, _maximum(this->_root))));
+			iterator end() const {
+				return (RBTree::iterator(this, TNULL));
 			}
-			const_reverse_iterator rend() const {
-				return (RBTree::const_reverse_iterator(
-							RBTree::const_iterator(this, TNULL)));
+
+			reverse_iterator rbegin() const {
+				return (RBTree::reverse_iterator(RBTree::iterator(this, _maximum(this->_root))));
 			}
-			const_iterator find(const key_type& k) const {
-				return (RBTree::const_iterator(this, _search(this->_root, k)));
+
+			reverse_iterator rend() const {
+				return (RBTree::reverse_iterator(RBTree::iterator(this, TNULL)));
 			}
+
+			iterator find(const key_type& k) const {
+				return (RBTree::iterator(this, _search(this->_root, k)));
+			}
+
 			// очень плохо, но пусть так
-			const_iterator lower_bound (const key_type& k) const {
-				return (RBTree::const_iterator(this, _lower_bound(_maximum(this->_root), k)));
+			iterator lower_bound (const key_type& k) const {
+				return (RBTree::iterator(this, _lower_bound(_maximum(this->_root), k)));
 			}
-			const_iterator upper_bound (const key_type& k) const {
-				return (RBTree::const_iterator(this, _upper_bound(_minimum(this->_root), k)));
+
+			iterator upper_bound (const key_type& k) const {
+				return (RBTree::iterator(this, _upper_bound(_minimum(this->_root), k)));
 			}
 
 		private:

@@ -107,6 +107,15 @@ namespace ft {
 			size_type max_size() const {
 				return (this->_alloc.max_size());
 			}
+			// Element access
+			mapped_type& operator[] (const key_type& k) {
+				iterator it = this->find(k);
+
+				if (it != this->_base.end()) {
+					return it->second;
+				}
+				return (this->insert(make_pair(k, mapped_type())).first)->second;
+			}
 
 			// Modifiers
 			// insert
@@ -135,6 +144,24 @@ namespace ft {
 					InputIterator >::type last) {
 				for (InputIterator it = first; it != last; ++it) {
 					this->insert(*it);
+				}
+			}
+
+			// Erase
+			void erase (iterator position) {
+				this->erase(position->first);
+				--(this->_size);
+			}
+			size_type erase (const key_type& k) {
+				if (this->find(k) == this->end()) {
+					return 0;
+				}
+				_base.delete_node(make_pair(k, mapped_type()));
+				return 1;
+			}
+			void erase (iterator first, iterator last) {
+				for (iterator it = first; it != last;) {
+					this->erase(it++);
 				}
 			}
 

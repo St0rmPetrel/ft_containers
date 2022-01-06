@@ -178,7 +178,7 @@ namespace ft {
 				return this->_base.find(val);
 			}
 			size_type count (const value_type& val) const {
-				if (this->_base.find(val) != this->end()) {
+				if (this->find(val) != this->end()) {
 					return 1;
 				}
 				return 0;

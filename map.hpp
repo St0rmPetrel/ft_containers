@@ -66,19 +66,29 @@ namespace ft {
 			explicit map (const key_compare& comp = key_compare(),
 					const allocator_type& alloc = allocator_type())
 				: _base(alloc, value_compare(comp)),
+				_size(0),
 				_key_comp(comp),
 				_value_comp(value_compare(comp)),
-				_alloc(alloc),
-				_size(0) { }
+				_alloc(alloc) { }
 			// range
 			template <class InputIterator>
 			map (InputIterator first, InputIterator last,
 					const key_compare& comp = key_compare(),
-					const allocator_type& alloc = allocator_type()) {
+					const allocator_type& alloc = allocator_type())
+				: _base(alloc, value_compare(comp)),
+				_size(0),
+				_key_comp(comp),
+				_value_comp(value_compare(comp)),
+				_alloc(alloc) {
 				this->insert(first, last);
 			}
 			// copy
-			map (const map& x) {
+			map (const map& x)
+				: _base(x._alloc, x._value_comp),
+				_size(0),
+				_key_comp(x._key_comp),
+				_value_comp(x._value_comp),
+				_alloc(x._alloc) {
 				this->insert(x.begin(), x.end());
 			}
 
@@ -87,6 +97,9 @@ namespace ft {
 
 			map& operator= (const map& x) {
 				this->clear();
+				this->_key_comp = x._key_comp;
+				this->_value_comp = x._value_comp;
+				this->_alloc = x._alloc;
 				this->insert(x.begin(), x.end());
 				return (*this);
 			}
@@ -144,6 +157,7 @@ namespace ft {
 			}
 			// with hint (just a gab)
 			iterator insert (iterator position, const value_type& val) {
+				(void)position;
 				return (this->insert(val)).first;
 			}
 			// range

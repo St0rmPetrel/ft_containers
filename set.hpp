@@ -46,7 +46,10 @@ namespace ft {
 			// empty (default)
 			explicit set (const key_compare& comp = key_compare(),
 					const allocator_type& alloc = allocator_type())
-				: _base(alloc, comp), _comp(comp), _alloc(alloc), _size(0) { }
+				: _base(alloc, comp),
+				_size(0),
+				_comp(comp),
+				_alloc(alloc) { }
 			// range
 			template < class InputIterator >
 			set (InputIterator first,
@@ -55,7 +58,10 @@ namespace ft {
 					InputIterator >::type last,
 					const key_compare& comp = key_compare(),
 					const allocator_type& alloc = allocator_type())
-				: _base(alloc, comp), _comp(comp), _alloc(alloc), _size(0) {
+				: _base(alloc, comp),
+				_size(0),
+				_comp(comp),
+				_alloc(alloc) {
 				this->insert(first, last);
 			}
 			// copy
@@ -68,6 +74,10 @@ namespace ft {
 
 			set& operator= (const set& x) {
 				this->clear();
+
+				this->_size = 0;
+				this->_comp = x._comp;
+				this->_alloc = x._alloc;
 				this->insert(x.begin(), x.end());
 				return (*this);
 			}
@@ -115,6 +125,7 @@ namespace ft {
 			}
 			// with hint, just a Gab
 			iterator insert (iterator position, const value_type& val) {
+				(void)position;
 				return (this->insert(val)).first;
 			}
 			// range

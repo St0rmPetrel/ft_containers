@@ -3,6 +3,8 @@
 
 #include <functional>
 #include <memory>
+#include <iterator>
+#include <limits>
 
 #include "rb_tree.hpp"
 #include "pair.hpp"
@@ -73,13 +75,21 @@ namespace ft {
 			map (InputIterator first, InputIterator last,
 					const key_compare& comp = key_compare(),
 					const allocator_type& alloc = allocator_type()) {
+				this->insert(first, last);
 			}
 			// copy
 			map (const map& x) {
+				this->insert(x.begin(), x.end());
 			}
 
 			// Destructor
 			~map() { }
+
+			map& operator= (const map& x) {
+				this->clear();
+				this->insert(x.begin(), x.end());
+				return (*this);
+			}
 		public:
 			// iterators
 			iterator begin() const {
@@ -165,6 +175,18 @@ namespace ft {
 				}
 			}
 
+			void swap (map& x) {
+				(this->_base).swap(x._base);
+				std::swap(this->_size, x._size);
+				std::swap(this->_key_comp, x._key_comp);
+				std::swap(this->_value_comp, x._value_comp);
+				std::swap(this->_alloc, x._alloc);
+			}
+
+			void clear() {
+				erase(this->begin(), this->end());
+			}
+
 			// Observers
 			key_compare key_comp() const {
 				return (this->_key_comp);
@@ -178,6 +200,30 @@ namespace ft {
 			}
 			const_iterator find (const key_type& k) const {
 				return this->_base.find(make_pair(k, mapped_type()));
+			}
+			size_type count (const key_type& k) const {
+				if (this->find(k) != this->end()) {
+					return 1;
+				}
+				return 0;
+			}
+			iterator lower_bound (const key_type& k) {
+				return this->_base.lower_bound(make_pair(k, mapped_type()));
+			}
+			const_iterator lower_bound (const key_type& k) const {
+				return this->_base.lower_bound(make_pair(k, mapped_type()));
+			}
+			iterator upper_bound (const key_type& k) {
+				return this->_base.upper_bound(make_pair(k, mapped_type()));
+			}
+			const_iterator upper_bound (const key_type& k) const {
+				return this->_base.upper_bound(make_pair(k, mapped_type()));
+			}
+			pair<const_iterator,const_iterator> equal_range (const key_type& k) const {
+				return make_pair(this->lower_bound(k), this->upper_bound(k));
+			}
+			pair<iterator,iterator>             equal_range (const key_type& k) {
+				return make_pair(this->lower_bound(k), this->upper_bound(k));
 			}
 			// Allocator
 			allocator_type get_allocator() const {
